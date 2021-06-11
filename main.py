@@ -28,10 +28,12 @@ def get_parser(**parser_kwargs):
         "--name",
         type=str,
         const=True,
-        default="/home/timomil/PycharmProjects/Codebase/experiments",
+        default="/export/home/tmilbich/PycharmProjects/dml_pl/experiments",
         nargs="?",
         help="postfix for logdir",
     )
+    # default = "/home/timomil/PycharmProjects/Codebase/experiments",
+
     parser.add_argument(
         "-r",
         "--resume",
