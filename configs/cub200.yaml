@@ -41,8 +41,8 @@ model:
 data:
   target: data.base.DataModuleFromConfig
   params:
-    batch_size: 20
-    num_workers: 10
+    batch_size: 112
+    num_workers: 12
     train:
       target: data.CUB200.CUB200DATA
       params: 
