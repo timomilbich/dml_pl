@@ -137,7 +137,7 @@ if __name__ == "__main__":
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
     parser_kwargs_set = [
-    # "--gpus", "0,",
+    "--gpus", "0,",
     "--base", "configs/cub200.yaml",
     "--project" , "test",
     # "--overfit_batches", "10",
@@ -153,9 +153,9 @@ if __name__ == "__main__":
     opt, unknown = parser.parse_known_args(parser_kwargs_set)
 
     ## Setup GPU's
-    # GPUs = opt.gpus
-    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    # os.environ["CUDA_VISIBLE_DEVICES"] = GPUs
+    GPUs = opt.gpus
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = GPUs
 
     if opt.name and opt.resume:
         raise ValueError(
@@ -202,7 +202,7 @@ if __name__ == "__main__":
         # default to ddp
         for k in nondefault_trainer_args(opt):
             trainer_config[k] = getattr(opt, k)
-        # trainer_config['gpus'] = ",".join([str(i) for i in range(len(trainer_config['gpus'].strip(",").split(',')))])
+        trainer_config['gpus'] = ",".join([str(i) for i in range(len(trainer_config['gpus'].strip(",").split(',')))])
         trainer_opt = argparse.Namespace(**trainer_config)
         lightning_config.trainer = trainer_config
 
