@@ -153,6 +153,7 @@ if __name__ == "__main__":
     parser = Trainer.add_argparse_args(parser)
 
     opt, unknown = parser.parse_known_args(parser_kwargs_set)
+    print(opt.gpus)
 
     ## Setup GPU's
     GPUs = opt.gpus
