@@ -1,0 +1,64 @@
+model:
+  base_learning_rate: 1e-5
+  target: models.network.Net
+  params:
+    config:
+      Loss:
+        target: models.loss.Loss
+      CustomLogs:
+        target: models.log.custom_logging
+
+data:
+  target: data.base.DataModuleFromConfig
+  params:
+    batch_size: 10
+    num_workers: 0
+    train:
+      target: data.MNIST.MNISTDATA
+      params: 
+        root: "dataset/MNIST/"
+        train: True
+        img_dim: 28
+    validation:
+      target: data.MNIST.MNISTDATA
+      params:
+        root: "dataset/MNIST/"
+        train: False
+        img_dim: 28
+
+lightning:
+  trainer:
+    accelerator: 'ddp'
+    accumulate_grad_batches: 1
+    auto_scale_batch_size: false
+    benchmark: False
+    deterministic: True
+    amp_backend: 'native'
+    amp_level: '02'
+    log_every_n_steps: 25
+    check_val_every_n_epoch: 1
+
+  logger:
+    target: pytorch_lightning.loggers.WandbLogger
+    params:
+      wandb_key: 8388187e7c47589ca2875e4007015c7536aede7f
+      project: Test_codebase
+      group: base
+
+  modelcheckpoint:
+    target: pytorch_lightning.callbacks.ModelCheckpoint
+    params:
+      dirpath: ''
+      monitor: 'val/loss'
+      mode: min
+      period: 1
+      verbose: True
+      save_last: True
+      save_top_k: 1
+  
+  callbacks:
+    earlystopcallback:
+      target: utils.callbacks.EarlyStoppingPL
+      params:
+        monitor: 'val/accuracy'
+        min_delta: 0.0001

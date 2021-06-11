@@ -1,0 +1,94 @@
+model:
+  base_learning_rate: 0.00001
+  weight_decay: 0.0004
+  gamma: 0.3
+  tau: [1000]
+  scheduler: "step"
+  target: models.dml_model.DML_Model
+  params:
+    config:
+      Architecture:
+        target: architectures.resnet50.Network
+        params:
+          pretraining: "imagenet"
+          embed_dim: 128
+          arch: "resnet50_frozen_normalize"
+
+      Loss:
+        target: criteria.select
+        name: "margin"
+        params:
+          name: "margin"
+          batchminer:
+          n_classes: 100
+          loss_margin_margin: 0.2
+          loss_margin_beta_lr: 0.0005
+          loss_margin_beta: 1.2
+          loss_margin_nu: 0
+          loss_margin_beta_constant: False
+
+      Batchmining:
+        target: batchminer.select
+        name: "distance"
+        params:
+          name: "distance"
+          miner_distance_lower_cutoff: 0.5
+          miner_distance_upper_cutoff: 1.4
+
+      CustomLogs:
+        target: models.log.custom_logging
+
+data:
+  target: data.base.DataModuleFromConfig
+  params:
+    batch_size: 20
+    num_workers: 10
+    train:
+      target: data.CUB200.CUB200DATA
+      params: 
+        root: "dataset/cub200/"
+        train: True
+        arch: "resnet50_frozen_normalize"
+    validation:
+      target: data.CUB200.CUB200DATA
+      params:
+        root: "dataset/cub200/"
+        train: False
+        arch: "resnet50_frozen_normalize"
+
+lightning:
+  trainer:
+    accelerator: 'ddp'
+    accumulate_grad_batches: 1
+    auto_scale_batch_size: false
+    benchmark: False
+    deterministic: True
+    amp_backend: 'native'
+    amp_level: '02'
+    log_every_n_steps: 25
+    check_val_every_n_epoch: 1
+
+  logger:
+    target: pytorch_lightning.loggers.WandbLogger
+    params:
+      wandb_key: 8388187e7c47589ca2875e4007015c7536aede7f
+      project: Test_codebase
+      group: base
+
+  modelcheckpoint:
+    target: pytorch_lightning.callbacks.ModelCheckpoint
+    params:
+      dirpath: ''
+      monitor: 'val/loss'
+      mode: min
+      period: 1
+      verbose: True
+      save_last: True
+      save_top_k: 1
+  
+  callbacks:
+    earlystopcallback:
+      target: utils.callbacks.EarlyStoppingPL
+      params:
+        monitor: 'val/accuracy'
+        min_delta: 0.0001

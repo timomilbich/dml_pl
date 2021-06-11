@@ -1,0 +1,36 @@
+name: cb
+channels:
+   - conda-forge
+   - pytorch
+   - defaults
+dependencies:
+   - ca-certificates
+   - certifi
+   - python=3.7
+   - pip
+   - pytorch
+   - numpy
+   - h5py
+   - pillow
+   - pyyaml
+   - scipy
+   - torchvision
+   - pytorch-lightning
+   - tqdm
+   - scikit-learn
+   - matplotlib
+   - scikit-image
+   - umap-learn
+   - gpustat
+   - pandas
+   - matplotlib
+   - pip:
+     - wandb
+     - pretrainedmodels
+     - faiss-gpu
+     - chardet
+     - idna
+     - requests
+     - requests-oauthlib
+     - urllib3
+     - omegaconf
