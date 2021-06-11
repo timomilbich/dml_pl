@@ -55,53 +55,49 @@ class DML_Model(pl.LightningModule):
         labels = batch[1]
         output = self.forward(inputs)
 
-        loss, log_dict = self.loss(output, labels, split="train") ## Change inputs to loss
+        loss = self.loss(output, labels, split="train") ## Change inputs to loss
         self.log("Loss", loss, prog_bar=True, logger=True, on_step=False, on_epoch=True) ## Add to progressbar
-        self.log_dict(log_dict, prog_bar=False, logger=True, on_step=True, on_epoch=False) ## Log in logger
-
-        self.custom_logs.update(batch, output, mode="train") ##Class to wrap all other logging options
-        self.log_dict(self.custom_logs.accuracy())
-
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        ## Define one validation step, similar to training_step
-        inputs = batch[0]
-        labels = batch[1]
-
-        with torch.no_grad():
-            output = self.forward(inputs)
-            loss, log_dict = self.loss(output, labels, split="val") ## Change inputs to loss
-
-        self.log_dict(log_dict, prog_bar=False, logger=True, on_step=False, on_epoch=True) ## Log in logger
-        self.custom_logs.update(batch, output, mode="val") ##Class to wrap all other logging options
-        self.log_dict(self.custom_logs.accuracy())
-        self.logger.experiment.log(self.custom_logs.image_prediction(), commit = False)
 
         return loss
 
     # def validation_step(self, batch, batch_idx):
-    #     x, class_labels = batch
+    #     ## Define one validation step, similar to training_step
+    #     inputs = batch[0]
+    #     labels = batch[1]
+    #
     #     with torch.no_grad():
-    #         emb = self.forward(x)
+    #         output = self.forward(inputs)
+    #         loss, log_dict = self.loss(output, labels, split="val") ## Change inputs to loss
     #
-    #     return {"logits": emb, "labels": class_labels}
+    #     self.log_dict(log_dict, prog_bar=False, logger=True, on_step=False, on_epoch=True) ## Log in logger
+    #     self.custom_logs.update(batch, output, mode="val") ##Class to wrap all other logging options
+    #     self.log_dict(self.custom_logs.accuracy())
+    #     self.logger.experiment.log(self.custom_logs.image_prediction(), commit = False)
+    #
+    #     return loss
 
-    # def validation_epoch_end(self, outputs):
-    #     logits = torch.cat([x["logits"] for x in outputs]).cpu().detach()
-    #     labels = torch.cat([x["labels"] for x in outputs]).cpu().detach()
-    #
-    #     sm = nn.LogSoftmax()
-    #     correct = torch.argmax(sm(logits), dim=1) == labels
-    #     accuracy = 100. * correct.sum() / labels.size()[0]
-    #
-    #     log_data = {
-    #         "epoch": self.current_epoch,
-    #         "val/accuracy": accuracy,
-    #     }
-    #     print(f"\nEpoch {self.current_epoch} validation: {accuracy:.2f}%")
-    #     self.log_dict(log_data)
+    def validation_step(self, batch, batch_idx):
+        inputs = batch[0]
+        labels = batch[1]
 
+        with torch.no_grad():
+            emb = self.forward(inputs)
+
+        return {"embeds": emb, "labels": labels}
+
+    def validation_epoch_end(self, outputs):
+        embeds = torch.cat([x["embeds"] for x in outputs]).cpu().detach()
+        labels = torch.cat([x["labels"] for x in outputs]).cpu().detach()
+
+        # perform validation
+        accuracy = 0.0
+
+        log_data = {
+            "epoch": self.current_epoch,
+            "val/accuracy": accuracy,
+        }
+        print(f"\nEpoch {self.current_epoch} validation: {accuracy:.2f}%")
+        self.log_dict(log_data, prog_bar=False, logger=True, on_step=False, on_epoch=True)
 
     def configure_optimizers(self):
 

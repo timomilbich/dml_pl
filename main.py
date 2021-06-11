@@ -33,7 +33,6 @@ def get_parser(**parser_kwargs):
         help="postfix for logdir",
     )
     # default = "/home/timomil/PycharmProjects/Codebase/experiments",
-
     parser.add_argument(
         "-r",
         "--resume",
@@ -139,9 +138,10 @@ if __name__ == "__main__":
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
     parser_kwargs_set = [
-    # "--gpus", "0,",
+    "--gpus", "1,",
     "--base", "configs/cub200.yaml",
     "--project" , "test",
+    "--debug", "True",
     # "--overfit_batches", "10",
     # "--limit_train_batches", "0.2",
     # "--limit_val_batches", "0.2",
