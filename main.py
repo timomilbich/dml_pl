@@ -139,7 +139,7 @@ if __name__ == "__main__":
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
     parser_kwargs_set = [
-    "--gpus", "0,",
+    # "--gpus", "0,",
     "--base", "configs/cub200.yaml",
     "--project" , "test",
     # "--overfit_batches", "10",
