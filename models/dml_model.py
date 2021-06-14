@@ -58,6 +58,8 @@ class DML_Model(pl.LightningModule):
         labels = batch[1]
         output = self.forward(inputs)
 
+        print(labels.cpu().numpy())
+
         loss = self.loss(output, labels, split="train") ## Change inputs to loss
         self.log("Loss", loss, prog_bar=True, logger=True, on_step=False, on_epoch=True) ## Add to progressbar
 
@@ -104,7 +106,7 @@ class DML_Model(pl.LightningModule):
             log_data[f"val/{k}"] = v
 
         print(f"\nEpoch {self.current_epoch} validation results:")
-        for k,v in computed_metrics:
+        for k,v in computed_metrics.items():
             print(f"{k}: {v}")
 
         self.log_dict(log_data, prog_bar=False, logger=True, on_step=False, on_epoch=True)
