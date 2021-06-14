@@ -29,6 +29,9 @@ class DML_Model(pl.LightningModule):
         ## Init constom log scripts
         self.custom_logs = instantiate_from_config(config["CustomLogs"])
 
+        ### Init metric computer
+        self.metric_computer = self.instantiate_from_config(config["MetricComputer"])
+
         if ckpt_path is not None:
             print("Loading model from {}".format(ckpt_path))
             self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)

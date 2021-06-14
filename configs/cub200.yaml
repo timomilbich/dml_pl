@@ -35,13 +35,21 @@ model:
           miner_distance_lower_cutoff: 0.5
           miner_distance_upper_cutoff: 1.4
 
+      Evaluation:
+        target: metrics.MetricComputer
+        params:
+          metric_names: ["e_recall@1", "nmi"]
+          n_classes: 100
+          evaluate_on_gpu: True
+
+
       CustomLogs:
         target: models.log.custom_logging
 
 data:
   target: data.base.DataModuleFromConfig
   params:
-    batch_size: 112
+    batch_size: 32
     num_workers: 12
     train:
       target: data.CUB200.CUB200DATA
