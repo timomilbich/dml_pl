@@ -138,7 +138,7 @@ if __name__ == "__main__":
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
     parser_kwargs_set = [
-    # "--gpus", "1,",
+    "--gpus", "0,",
     "--base", "configs/cub200.yaml",
     "--project" , "test",
     "--debug", "True",
@@ -261,13 +261,9 @@ if __name__ == "__main__":
         model.weight_decay = weight_decay
         model.gamma = gamma
         model.tau = tau
-
         bs, base_lr = config.data.params.batch_size, config.model.base_learning_rate
-        accumulate_grad_batches = lightning_config.trainer.accumulate_grad_batches or 1
-        model.learning_rate = 1 * 1 * 1 * base_lr
-        print("Setting learning rate to {:.2e} = {} (accumulate_grad_batches) * {} (num_gpus) * {} (batchsize) * {:.2e} (base_lr)".format(
-            model.learning_rate, accumulate_grad_batches, 0, bs, base_lr))
-        print(f"Other optimizer paramters set to: \nweight_decay: {weight_decay}\nscheduler: {scheduler}\ngamma: {gamma}\ntau: {tau}")
+        model.learning_rate = base_lr
+        print(f"Optimizer paramters set to: \nlearning rate: {model.learning_rate}\nweight_decay: {weight_decay}\nscheduler: {scheduler}\ngamma: {gamma}\ntau: {tau}")
 
         # run
         if opt.train:

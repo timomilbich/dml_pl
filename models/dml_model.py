@@ -30,7 +30,7 @@ class DML_Model(pl.LightningModule):
         self.custom_logs = instantiate_from_config(config["CustomLogs"])
 
         ### Init metric computer
-        self.metric_computer = self.instantiate_from_config(config["MetricComputer"])
+        self.metric_computer = instantiate_from_config(config["Evaluation"])
 
         if ckpt_path is not None:
             print("Loading model from {}".format(ckpt_path))
@@ -84,22 +84,29 @@ class DML_Model(pl.LightningModule):
         labels = batch[1]
 
         with torch.no_grad():
-            emb = self.forward(inputs)
+            out = self.model(inputs)
+            embeds = out['embeds']  # {'embeds': z, 'avg_features': y, 'features': x, 'extra_embeds': prepool_y}
 
-        return {"embeds": emb, "labels": labels}
+        return {"embeds": embeds, "labels": labels}
 
     def validation_epoch_end(self, outputs):
         embeds = torch.cat([x["embeds"] for x in outputs]).cpu().detach()
         labels = torch.cat([x["labels"] for x in outputs]).cpu().detach()
 
         # perform validation
-        accuracy = 0.0
+        computed_metrics = self.metric_computer.compute_standard(embeds, labels, self.device)
 
+        # log validation results
         log_data = {
             "epoch": self.current_epoch,
-            "val/accuracy": accuracy,
         }
-        print(f"\nEpoch {self.current_epoch} validation: {accuracy:.2f}%")
+        for k, v in computed_metrics.items():
+            log_data[f"val/{k}"] = v
+
+        print(f"\nEpoch {self.current_epoch} validation results:")
+        for k,v in computed_metrics:
+            print(f"{k}: {v}")
+
         self.log_dict(log_data, prog_bar=False, logger=True, on_step=False, on_epoch=True)
 
     def configure_optimizers(self):

@@ -36,12 +36,12 @@ model:
           miner_distance_upper_cutoff: 1.4
 
       Evaluation:
-        target: metrics.MetricComputer
+        target: metrics.metric_computer.MetricComputer
         params:
           metric_names: ["e_recall@1", "nmi"]
-          n_classes: 100
+          n_classes: 10
           evaluate_on_gpu: True
-
+          num_workers: 0
 
       CustomLogs:
         target: models.log.custom_logging
@@ -50,7 +50,7 @@ data:
   target: data.base.DataModuleFromConfig
   params:
     batch_size: 32
-    num_workers: 12
+    num_workers: 0
     train:
       target: data.CUB200.CUB200DATA
       params: 
@@ -66,13 +66,13 @@ data:
 
 lightning:
   trainer:
-    accelerator: 'ddp'
-    accumulate_grad_batches: 1
+    # accelerator: 'ddp'
+    # accumulate_grad_batches: 1
     auto_scale_batch_size: false
     benchmark: False
     deterministic: True
     amp_backend: 'native'
-    amp_level: '02'
+    #amp_level: '02'
     log_every_n_steps: 25
     check_val_every_n_epoch: 1
 
