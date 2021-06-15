@@ -45,11 +45,12 @@ def get_parser(**parser_kwargs):
     parser.add_argument(
         "-b",
         "--base",
-        nargs="*",
-        metavar="MNIST.yaml",
+        type=str,
+        const=True,
+        default="configs/cub200.yaml",
+        nargs="?",
         help="paths to base configs. Loaded from left-to-right. "
         "Parameters can be overwritten or added with command-line options of the form `--key value`.",
-        default=list(),
     )
     parser.add_argument(
         "-t",
@@ -137,22 +138,22 @@ if __name__ == "__main__":
 
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
-    parser_kwargs_set = [
-    "--gpus", "0,",
-    "--base", "configs/cub200.yaml",
-    "--project" , "test",
-    "--debug", "True",
+    # parser_kwargs_set = [
+    # "--gpus", "0,",
+    # "--base", "configs/cub200.yaml",
+    # "--project" , "test",
+    # "--debug", "True",
     # "--overfit_batches", "10",
     # "--limit_train_batches", "0.2",
     # "--limit_val_batches", "0.2",
     # "--track_grad_norm", "2",
     # "--fast_dev_run", "3", #runs n train, val and test batches
-    ]
+    # ]
 
     parser = get_parser()
     parser = Trainer.add_argparse_args(parser)
 
-    opt, unknown = parser.parse_known_args(parser_kwargs_set)
+    opt, unknown = parser.parse_known_args() # parser_kwargs_set
     print(opt.gpus)
 
     ## Setup GPU's
