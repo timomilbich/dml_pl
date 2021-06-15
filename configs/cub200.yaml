@@ -51,12 +51,19 @@ data:
   params:
     batch_size: 32
     num_workers: 0
+
     train:
       target: data.CUB200.CUB200DATA
       params: 
         root: "/export/home/karoth/Datasets/cub200/"
         train: True
         arch: "resnet50_frozen_normalize"
+      data_sampler:
+        target: datasampler.select
+        params:
+          name: "class_random"
+          samples_per_class: 2
+
     validation:
       target: data.CUB200.CUB200DATA
       params:

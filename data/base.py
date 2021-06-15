@@ -23,20 +23,35 @@ class DataModuleFromConfig(pl.LightningDataModule):
         self.batch_size = batch_size
         self.dataset_configs = dict()
         self.num_workers = num_workers if num_workers is not None else batch_size//2
-        if train is not None:
-            self.dataset_configs["train"] = train
-            self.train_dataloader = self._train_dataloader
-        if validation is not None:
-            self.dataset_configs["validation"] = validation
-            self.val_dataloader = self._val_dataloader
-        if test is not None:
-            self.dataset_configs["test"] = test
-            self.test_dataloader = self._test_dataloader
         self.wrap = wrap
 
-    def prepare_data(self):
-        for data_cfg in self.dataset_configs.values():
-            instantiate_from_config(data_cfg)
+        ## Gather dataset configs
+        if train is not None:
+            self.dataset_configs["train"] = train
+        if validation is not None:
+            self.dataset_configs["validation"] = validation
+        if test is not None:
+            self.dataset_configs["test"] = test
+
+        ## Init datasets
+        self.setup()
+
+        ## Init dataloaders
+        if train is not None:
+            ## Add datasampler if required
+            if "data_sampler" in self.dataset_configs["train"].keys():
+
+                config_datasampler = self.dataset_configs["train"]["data_sampler"]
+                config_datasampler["params"]['image_dict'] = self.datasets["train"].dataset.image_dict
+                config_datasampler["params"]['image_list'] = self.datasets["train"].dataset.image_list
+                self.train_datasampler = instantiate_from_config(config_datasampler)
+
+            self.train_dataloader = self._train_dataloader
+
+        if validation is not None:
+            self.val_dataloader = self._val_dataloader
+        if test is not None:
+            self.test_dataloader = self._test_dataloader
 
     def setup(self, stage=None):
         self.datasets = dict(
@@ -61,3 +76,7 @@ class DataModuleFromConfig(pl.LightningDataModule):
         return DataLoader(self.datasets["test"],
                           batch_size=self.batch_size,
                           num_workers=self.num_workers)
+
+    def prepare_data(self):
+        for data_cfg in self.dataset_configs.values():
+            instantiate_from_config(data_cfg)
