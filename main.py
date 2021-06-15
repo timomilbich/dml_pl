@@ -246,8 +246,9 @@ if __name__ == "__main__":
         # NOTE according to https://pytorch-lightning.readthedocs.io/en/latest/datamodules.html
         # calling these ourselves should not be necessary but it is.
         # lightning still takes care of proper multiprocessing though
+        #
         # data.prepare_data()
-        data.setup()
+        # data.setup()
 
         # configure learning rate
         # bs, base_lr, ngpu = config.data.params.batch_size, config.model.base_learning_rate, len(

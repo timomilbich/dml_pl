@@ -58,8 +58,6 @@ class DML_Model(pl.LightningModule):
         labels = batch[1]
         output = self.forward(inputs)
 
-        print(labels.cpu().numpy())
-
         loss = self.loss(output, labels, split="train") ## Change inputs to loss
         self.log("Loss", loss, prog_bar=True, logger=True, on_step=False, on_epoch=True) ## Add to progressbar
 
