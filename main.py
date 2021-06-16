@@ -32,7 +32,6 @@ def get_parser(**parser_kwargs):
         nargs="?",
         help="postfix for logdir",
     )
-    # default = "/home/timomil/PycharmProjects/Codebase/experiments",
     parser.add_argument(
         "-r",
         "--resume",
