@@ -63,22 +63,6 @@ class DML_Model(pl.LightningModule):
 
         return loss
 
-    # def validation_step(self, batch, batch_idx):
-    #     ## Define one validation step, similar to training_step
-    #     inputs = batch[0]
-    #     labels = batch[1]
-    #
-    #     with torch.no_grad():
-    #         output = self.forward(inputs)
-    #         loss, log_dict = self.loss(output, labels, split="val") ## Change inputs to loss
-    #
-    #     self.log_dict(log_dict, prog_bar=False, logger=True, on_step=False, on_epoch=True) ## Log in logger
-    #     self.custom_logs.update(batch, output, mode="val") ##Class to wrap all other logging options
-    #     self.log_dict(self.custom_logs.accuracy())
-    #     self.logger.experiment.log(self.custom_logs.image_prediction(), commit = False)
-    #
-    #     return loss
-
     def validation_step(self, batch, batch_idx):
         inputs = batch[0]
         labels = batch[1]
@@ -97,9 +81,7 @@ class DML_Model(pl.LightningModule):
         computed_metrics = self.metric_computer.compute_standard(embeds, labels, self.device)
 
         # log validation results
-        log_data = {
-            "epoch": self.current_epoch,
-        }
+        log_data = {"epoch": self.current_epoch}
         for k, v in computed_metrics.items():
             log_data[f"val/{k}"] = v
 
@@ -118,7 +100,6 @@ class DML_Model(pl.LightningModule):
         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=self.tau, gamma=self.gamma)
 
         return [optimizer], [scheduler]
-
 
     def get_progress_bar_dict(self):
         ## Drop version name in progressbar
