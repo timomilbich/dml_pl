@@ -42,15 +42,24 @@ def get_parser(**parser_kwargs):
         nargs="?",
         help="resume from logdir or checkpoint in logdir",
     )
+    # parser.add_argument(
+    #     "-b",
+    #     "--base",
+    #     type=str,
+    #     const=True,
+    #     default="configs/cub200.yaml",
+    #     nargs="?",
+    #     help="paths to base configs. Loaded from left-to-right. "
+    #     "Parameters can be overwritten or added with command-line options of the form `--key value`.",
+    # )
     parser.add_argument(
         "-b",
         "--base",
-        type=str,
-        const=True,
-        default="configs/cub200.yaml",
-        nargs="?",
+        nargs="*",
+        metavar="configs/cub200.yaml",
         help="paths to base configs. Loaded from left-to-right. "
         "Parameters can be overwritten or added with command-line options of the form `--key value`.",
+        default=list(),
     )
     parser.add_argument(
         "-t",
@@ -71,9 +80,9 @@ def get_parser(**parser_kwargs):
     )
     parser.add_argument(
         "-p", 
-        "--project", 
+        "--savename",
         default="test",
-        help="name of new or path to existing project",
+        help="name of new training run or path to existing run",
     )
     parser.add_argument(
         "-d",
@@ -141,7 +150,7 @@ if __name__ == "__main__":
     # parser_kwargs_set = [
     # "--gpus", "0,",
     # "--base", "configs/cub200.yaml",
-    # "--project" , "test",
+    # "--savename" , "test",
     # "--debug", "True",
     # "--overfit_batches", "10",
     # "--limit_train_batches", "0.2",
@@ -152,9 +161,7 @@ if __name__ == "__main__":
 
     parser = get_parser()
     parser = Trainer.add_argparse_args(parser)
-
     opt, unknown = parser.parse_known_args() # parser_kwargs_set
-    print(opt.gpus)
 
     ## Setup GPU's
     GPUs = opt.gpus
@@ -188,7 +195,7 @@ if __name__ == "__main__":
 
     else:
         name = opt.name if opt.name else ""
-        nowname = name + '/' + opt.project + "_" + now
+        nowname = name + '/' + opt.savename + "_" + now
         logdir = os.path.join(nowname, "logs")
 
     ckptdir = os.path.join(logdir, "checkpoints")
@@ -221,7 +228,7 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(logdir, "wandb"), exist_ok=True)
         _ = os.system('wandb login {}'.format(lightning_config.logger['params']['wandb_key']))
         os.environ['WANDB_API_KEY'] = lightning_config.logger['params']['wandb_key']
-        wandb_logger = WandbLogger(opt.project, logdir, project=lightning_config.logger['params']['project'], offline=opt.debug, version=opt.project,
+        wandb_logger = WandbLogger(opt.savename, logdir, project=lightning_config.logger['params']['project'], offline=opt.debug, version=opt.savename,
                                    group=lightning_config.logger['params']['group'])
         wandb_logger.log_hyperparams(config.model)
         trainer_kwargs["logger"] = wandb_logger

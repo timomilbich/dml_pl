@@ -49,8 +49,8 @@ model:
 data:
   target: data.base.DataModuleFromConfig
   params:
-    batch_size: 32
-    num_workers: 0
+    batch_size: 112
+    num_workers: 20
 
     train:
       target: data.CUB200.CUB200DATA
@@ -82,19 +82,21 @@ lightning:
     #amp_level: '02'
     log_every_n_steps: 25
     check_val_every_n_epoch: 1
+    max_epochs: 150
 
   logger:
     target: pytorch_lightning.loggers.WandbLogger
     params:
       wandb_key: 8388187e7c47589ca2875e4007015c7536aede7f
-      project: Test_codebase
-      group: base
+      project: DML_PL
+      group: baselines
+      savename: test
 
   modelcheckpoint:
     target: pytorch_lightning.callbacks.ModelCheckpoint
     params:
       dirpath: ''
-      monitor: 'val/loss'
+      monitor: 'val/e_recall@1'
       mode: min
       period: 1
       verbose: True
@@ -102,8 +104,8 @@ lightning:
       save_top_k: 1
   
   callbacks:
-    earlystopcallback:
-      target: utils.callbacks.EarlyStoppingPL
-      params:
-        monitor: 'val/accuracy'
-        min_delta: 0.0001
+#    earlystopcallback:
+#      target: utils.callbacks.EarlyStoppingPL
+#      params:
+#        monitor: 'val/accuracy'
+#        min_delta: 0.0001

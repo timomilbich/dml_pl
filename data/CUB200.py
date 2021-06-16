@@ -62,12 +62,12 @@ class CUB200DATA(Dataset):
             train_dataset = BaseDataset(train_image_dict, arch)
             train_dataset.conversion = train_conversion
             self.dataset = train_dataset
-            print(f'\nDataset Setup (Train)):\n#Classes: ({len(train_image_dict)})\n')
+            print(f'Dataset Setup (Train)): #Classes: {len(train_image_dict)}')
         else:
             test_dataset = BaseDataset(test_image_dict, arch, is_validation=True)
             test_dataset.conversion = test_conversion
             self.dataset = test_dataset
-            print(f'\nDataset Setup (Val)):\n#Classes: ({len(test_image_dict)})\n')
+            print(f'Dataset Setup (Val)): #Classes: {len(test_image_dict)}\n')
 
         # eval_dataset = BaseDataset(train_image_dict, opt, is_validation=True)
         # eval_train_dataset = BaseDataset(train_image_dict, opt, is_validation=False)
