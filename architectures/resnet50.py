@@ -14,8 +14,8 @@ class Network(torch.nn.Module):
         super(Network, self).__init__()
 
         self.arch  = arch
+        self.embed_dim = embed_dim
         self.model = ptm.__dict__['resnet50'](num_classes=1000, pretrained=pretraining if pretraining else None)
-
         self.name = self.arch
 
         if 'frozen' in self.arch:
@@ -24,14 +24,12 @@ class Network(torch.nn.Module):
                 module.train = lambda _: None
 
         self.model.last_linear = torch.nn.Linear(self.model.last_linear.in_features, embed_dim)
-
         self.layer_blocks = nn.ModuleList([self.model.layer1, self.model.layer2, self.model.layer3, self.model.layer4])
-
-        self.out_adjust = None
-        self.extra_out  = None
 
         self.pool_base = torch.nn.AdaptiveAvgPool2d(1)
         self.pool_aux  = torch.nn.AdaptiveMaxPool2d(1) if 'double' in self.arch else None
+
+        print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')
 
 
     def forward(self, x, warmup=False, **kwargs):

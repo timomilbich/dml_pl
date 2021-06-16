@@ -8,11 +8,13 @@ import pretrainedmodels as ptm
 
 """============================================================="""
 class Network(torch.nn.Module):
-    def __init__(self, arch, embed_dim):
+    def __init__(self, arch, pretraining, embed_dim):
         super(Network, self).__init__()
 
         self.arch  = arch
-        self.model = ptm.__dict__['bninception'](num_classes=1000, pretrained='imagenet')
+        self.embed_dim = embed_dim
+        self.name = self.arch
+        self.model = ptm.__dict__['bninception'](num_classes=1000, pretrained=pretraining)
         self.model.last_linear = torch.nn.Linear(self.model.last_linear.in_features, embed_dim)
         if '_he' in self.arch:
             torch.nn.init.kaiming_normal_(self.model.last_linear.weight, mode='fan_out')
@@ -26,11 +28,7 @@ class Network(torch.nn.Module):
         self.pool_base = F.avg_pool2d
         self.pool_aux  = F.max_pool2d if 'double' in self.arch else None
 
-        self.name = self.arch
-
-        self.out_adjust = None
-        self.extra_out  = None
-
+        print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')
 
     def forward(self, x, warmup=False, **kwargs):
         x = self.model.features(x)

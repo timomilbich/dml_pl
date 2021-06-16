@@ -1,8 +1,11 @@
-export GPU_TRAINING=3,
-echo "gpus to use: ${GPU_TRAINING}"
-export SAVE_PATH='/export/data2/tmilbich/PycharmProjects/Assessing_transfer_learning/Training_Results'
-echo "SAVE_PATH is ${SAVE_PATH}"
+export GPU_TRAINING=5,
+echo "GPUs: ${GPU_TRAINING}"
+export EXP_PATH='/export/data/tmilbich/PycharmProjects/dml_pl/experiments/training_models'
+echo "EXP_PATH is ${EXP_PATH}"
 
+### BASELINE CHECKS
+# ... margin loss
+#python main.py --savename baseline_marginloss_cub200 --gpus ${GPU_TRAINING} --base configs/marginloss.yaml
 
-python main.py --savename baseline_marginloss_cub200 --gpus ${GPU_TRAINING} --base configs/cub200.yaml
-
+# ... multisimilarity loss
+python main.py --savename baseline_multisimilarity_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml

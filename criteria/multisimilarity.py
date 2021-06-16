@@ -21,8 +21,6 @@ class Criterion(torch.nn.Module):
             n_classes:          Number of different classes during training.
         """
         super(Criterion, self).__init__()
-        self.pars = opt
-
 
         self.n_classes          = opt.n_classes
 
@@ -34,8 +32,6 @@ class Criterion(torch.nn.Module):
         self.d_mode     = opt.loss_multisimilarity_d_mode
         self.base_mode  = opt.loss_multisimilarity_base_mode
         self.name       = 'multisimilarity'
-
-        self.lr = opt.lr
 
         ####
         self.ALLOWED_MINING_OPS  = ALLOWED_MINING_OPS

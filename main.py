@@ -1,4 +1,5 @@
 import argparse, os, sys, datetime, glob
+import wandb
 from omegaconf import OmegaConf
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
@@ -24,8 +25,7 @@ def get_parser(**parser_kwargs):
 
     parser = argparse.ArgumentParser(**parser_kwargs)
     parser.add_argument(
-        "-n",
-        "--name",
+        "--exp_path",
         type=str,
         const=True,
         default="/export/home/tmilbich/PycharmProjects/dml_pl/experiments",
@@ -42,21 +42,11 @@ def get_parser(**parser_kwargs):
         nargs="?",
         help="resume from logdir or checkpoint in logdir",
     )
-    # parser.add_argument(
-    #     "-b",
-    #     "--base",
-    #     type=str,
-    #     const=True,
-    #     default="configs/cub200.yaml",
-    #     nargs="?",
-    #     help="paths to base configs. Loaded from left-to-right. "
-    #     "Parameters can be overwritten or added with command-line options of the form `--key value`.",
-    # )
     parser.add_argument(
         "-b",
         "--base",
         nargs="*",
-        metavar="configs/cub200.yaml",
+        metavar="configs/marginloss.yaml",
         help="paths to base configs. Loaded from left-to-right. "
         "Parameters can be overwritten or added with command-line options of the form `--key value`.",
         default=list(),
@@ -149,7 +139,7 @@ if __name__ == "__main__":
 
     # parser_kwargs_set = [
     # "--gpus", "0,",
-    # "--base", "configs/cub200.yaml",
+    # "--base", "configs/marginloss.yaml",
     # "--savename" , "test",
     # "--debug", "True",
     # "--overfit_batches", "10",
@@ -168,7 +158,7 @@ if __name__ == "__main__":
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     os.environ["CUDA_VISIBLE_DEVICES"] = GPUs
 
-    if opt.name and opt.resume:
+    if opt.exp_path and opt.resume:
         raise ValueError(
             "-n/--name and -r/--resume cannot be specified both."
             "If you want to resume training in a new log folder, "
@@ -194,7 +184,7 @@ if __name__ == "__main__":
         nowname = _tmp[_tmp.index("logs")-1]
 
     else:
-        name = opt.name if opt.name else ""
+        name = opt.exp_path if opt.exp_path else ""
         nowname = name + '/' + opt.savename + "_" + now
         logdir = os.path.join(nowname, "logs")
 
@@ -228,8 +218,9 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(logdir, "wandb"), exist_ok=True)
         _ = os.system('wandb login {}'.format(lightning_config.logger['params']['wandb_key']))
         os.environ['WANDB_API_KEY'] = lightning_config.logger['params']['wandb_key']
-        wandb_logger = WandbLogger(opt.savename, logdir, project=lightning_config.logger['params']['project'], offline=opt.debug, version=opt.savename,
-                                   group=lightning_config.logger['params']['group'])
+        wandb_id = wandb.util.generate_id()
+        wandb_logger = WandbLogger(opt.savename, logdir, project=lightning_config.logger['params']['project'], offline=opt.debug,
+                                   group=lightning_config.logger['params']['group'], id=wandb_id)
         wandb_logger.log_hyperparams(config.model)
         trainer_kwargs["logger"] = wandb_logger
 

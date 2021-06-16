@@ -10,16 +10,19 @@ import torchvision.models as mod
 
 """============================================================="""
 class Network(torch.nn.Module):
-    def __init__(self, arch):
+    def __init__(self, arch, embed_dim):
         super(Network, self).__init__()
 
         self.arch  = arch
         self.model = mod.googlenet(pretrained=True)
 
-        self.model.last_linear = torch.nn.Linear(self.model.fc.in_features, opt.embed_dim)
+        self.model.last_linear = torch.nn.Linear(self.model.fc.in_features, embed_dim)
         self.model.fc = self.model.last_linear
 
         self.name = self.arch
+
+        print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')
+
 
     def forward(self, x):
         x = self.model(x)
