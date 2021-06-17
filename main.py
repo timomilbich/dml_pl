@@ -223,18 +223,18 @@ if __name__ == "__main__":
         wandb_logger.log_hyperparams(config.model)
         trainer_kwargs["logger"] = wandb_logger
 
-        # Setup saving modelcheckpoint
+        # Setup modelcheckpoint callback
         # lightning_config.modelcheckpoint['params']['dirpath'] = os.path.join(ckptdir, "{epoch:06}")
         lightning_config.modelcheckpoint['params']['dirpath'] = ckptdir
-        trainer_kwargs["checkpoint_callback"] = instantiate_from_config(lightning_config.modelcheckpoint)
+        checkpoint_callback = instantiate_from_config(lightning_config.modelcheckpoint)
 
-        # Define callbacks -Setupcallback is always called
+        # Setup other callbacks - Setupcallback is always called
         setup_callback = SetupCallback(opt.resume, now, logdir, ckptdir, cfgdir, config, lightning_config)
         if lightning_config.callbacks is not None:
             logging_callbacks = [instantiate_from_config(lightning_config.callbacks[k]) for k in lightning_config.callbacks]
         else:
             logging_callbacks = []
-        trainer_kwargs["callbacks"] = [setup_callback, *logging_callbacks]
+        trainer_kwargs["callbacks"] = [setup_callback, checkpoint_callback, *logging_callbacks]
 
         ## Define Trainer
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
