@@ -96,9 +96,9 @@ lightning:
     target: pytorch_lightning.callbacks.ModelCheckpoint
     params:
       dirpath: ''
-      filename: '{epoch}-recall@1{val/e_recall@1:.2f}'
+      filename: 'recall@1{val/e_recall@1:.4f}'
       monitor: 'val/e_recall@1'
-      mode: min
+      mode: max
       every_n_val_epochs: 1
       verbose: True
       save_last: True
