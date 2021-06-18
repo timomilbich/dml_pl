@@ -1,5 +1,5 @@
 # Datafolders
-./architectures/pretrained_weights
+/architectures/pretrained_weights/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
