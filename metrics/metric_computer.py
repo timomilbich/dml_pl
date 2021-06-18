@@ -23,7 +23,7 @@ class MetricComputer():
         ###
         # .cpu().detach().numpy().tolist())
         target_labels = np.hstack(target_labels.cpu().detach().numpy()).reshape(-1,1)
-        features = features.cpu().detach().numpy()
+        features = features.cpu().detach().numpy().astype(np.float32)
         computed_metrics = dict()
 
         ### Init faiss

@@ -38,6 +38,15 @@ class BaseDataset(Dataset):
         self.normal_transform.extend([transforms.ToTensor(), normalize])
         self.normal_transform = transforms.Compose(self.normal_transform)
 
+        if 'clip' in self.arch:
+            self.normal_transform = transforms.Compose([
+                transforms.Resize(256, interpolation=Image.BICUBIC),
+                transforms.CenterCrop(crop_im_size),
+                lambda image: image.convert("RGB"),
+                transforms.ToTensor(),
+                transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
+            ])
+
     def init_setup(self):
         self.n_files       = np.sum([len(self.image_dict[key]) for key in self.image_dict.keys()])
         self.avail_classes = sorted(list(self.image_dict.keys()))

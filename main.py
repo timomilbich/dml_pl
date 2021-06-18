@@ -266,6 +266,7 @@ if __name__ == "__main__":
 
         # run
         if opt.train:
+            # train model
             trainer.tune(model, data)
             trainer.fit(model, data)
         # if not opt.no_test and not trainer.interrupted:

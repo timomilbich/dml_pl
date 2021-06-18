@@ -7,6 +7,7 @@ from utils.auxiliaries import instantiate_from_config
 import numpy as np
 import wandb
 from criteria import add_criterion_optim_params
+from models.clip import load_custom as clip_load
 
 class DML_Model(pl.LightningModule):
     def __init__(self, config, ckpt_path=None, ignore_keys=[]):
@@ -19,7 +20,9 @@ class DML_Model(pl.LightningModule):
         self.tau = 0
 
         ## Load model using config
-        self.model = instantiate_from_config(config["Architecture"])
+        # self.model = instantiate_from_config(config["Architecture"])
+        self.model, _ = clip_load('ViT-B/32')
+        self.config_arch = config["Architecture"]
 
         ## Init loss
         batchminer = instantiate_from_config(config["Batchmining"]) if "Batchmining" in config.keys() else None
@@ -68,8 +71,11 @@ class DML_Model(pl.LightningModule):
         labels = batch[1]
 
         with torch.no_grad():
-            out = self.model(inputs)
-            embeds = out['embeds']  # {'embeds': z, 'avg_features': y, 'features': x, 'extra_embeds': prepool_y}
+            if 'clip' in self.config_arch['params']['arch']:
+                embeds = self.model.encode_image(inputs)
+            else:
+                out = self.model(inputs)
+                embeds = out['embeds']  # {'embeds': z, 'avg_features': y, 'features': x, 'extra_embeds': prepool_y}
 
         return {"embeds": embeds, "labels": labels}
 

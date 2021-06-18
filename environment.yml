@@ -36,3 +36,4 @@ dependencies:
      - requests-oauthlib
      - urllib3
      - omegaconf
+     - timm

@@ -12,7 +12,7 @@ model:
         params:
           pretraining: "imagenet"
           embed_dim: 128
-          arch: "resnet50_frozen_normalize"
+          arch: "clip" # resnet50_frozen_normalize
 
       Loss:
         target: criteria.select
@@ -53,11 +53,11 @@ data:
     num_workers: 20
 
     train:
-      target: data.CUB200.CUB200DATA
+      target: data.CARS196.CARS196DATA
       params: 
-        root: "/export/home/karoth/Datasets/cub200/"
+        root: "/export/home/karoth/Datasets/cars196/"
         train: True
-        arch: "resnet50_frozen_normalize"
+        arch: "clip" # resnet50_frozen_normalize
       data_sampler:
         target: datasampler.select
         params:
@@ -65,11 +65,11 @@ data:
           samples_per_class: 2
 
     validation:
-      target: data.CUB200.CUB200DATA
+      target: data.CARS196.CARS196DATA
       params:
-        root: "/export/home/karoth/Datasets/cub200/"
+        root: "/export/home/karoth/Datasets/cars196/"
         train: False
-        arch: "resnet50_frozen_normalize"
+        arch: "clip" # resnet50_frozen_normalize
 
 lightning:
   trainer:
@@ -83,6 +83,7 @@ lightning:
     log_every_n_steps: 25
     check_val_every_n_epoch: 1
     max_epochs: 150
+    num_sanity_val_steps: -1
 
   logger:
     target: pytorch_lightning.loggers.WandbLogger
