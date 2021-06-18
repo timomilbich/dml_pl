@@ -20,8 +20,8 @@ class DML_Model(pl.LightningModule):
         self.tau = 0
 
         ## Load model using config
-        # self.model = instantiate_from_config(config["Architecture"])
-        self.model, _ = clip_load('ViT-B/32')
+        self.model = instantiate_from_config(config["Architecture"])
+        # self.model, _ = clip_load('ViT-B/32')
         self.config_arch = config["Architecture"]
 
         ## Init loss

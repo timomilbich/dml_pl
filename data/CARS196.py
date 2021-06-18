@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from .basic_dml_dataset import BaseDataset
 
 
-class CARS196DATA(Dataset):
+class DATA(Dataset):
     """`CUB200 dataset.
 
     Args:
@@ -23,7 +23,7 @@ class CARS196DATA(Dataset):
             arch = 'resnet50',
             ):
 
-        super(CARS196DATA, self).__init__()
+        super(DATA, self).__init__()
 
         self.train = train  # training set or test set
         self.root = root

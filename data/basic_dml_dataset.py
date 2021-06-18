@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
+from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 import numpy as np
 from PIL import Image
 
@@ -22,11 +23,7 @@ class BaseDataset(Dataset):
         if 'bninception' not in self.arch:
             self.f_norm = normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
         else:
-            # normalize = transforms.Normalize(mean=[0.502, 0.4588, 0.4078],std=[1., 1., 1.])
             self.f_norm = normalize = transforms.Normalize(mean=[0.502, 0.4588, 0.4078],std=[0.0039, 0.0039, 0.0039])
-
-        transf_list = []
-
         self.crop_size = crop_im_size = 224 if 'googlenet' not in self.arch else 227
 
         #############
