@@ -11,8 +11,8 @@ model:
         target: architectures.deit.Network
         params:
           pretraining: "imagenet"
-          embed_dim: -1
-          arch: "deit_small_patch16_224" # deit_small_patch16_224, resnet50_frozen_normalize
+          embed_dim: 128
+          arch: "deit_small_patch16_224_normalize" # deit_small_patch16_224, resnet50_frozen_normalize
 
       Loss:
         target: criteria.select
@@ -53,9 +53,9 @@ data:
     num_workers: 20
 
     train:
-      target: data.CARS196.DATA
+      target: data.CUB200.DATA
       params: 
-        root: "/export/home/karoth/Datasets/cars196/"
+        root: "/export/home/karoth/Datasets/cub200/"
         train: True
         arch: "deit_small_patch16_224_normalize" # resnet50_frozen_normalize
       data_sampler:
@@ -65,9 +65,9 @@ data:
           samples_per_class: 2
 
     validation:
-      target: data.CARS196.DATA
+      target: data.CUB200.DATA
       params:
-        root: "/export/home/karoth/Datasets/cars196/"
+        root: "/export/home/karoth/Datasets/cub200/"
         train: False
         arch: "deit_small_patch16_224_normalize" # resnet50_frozen_normalize
 
@@ -90,7 +90,7 @@ lightning:
     params:
       wandb_key: 8388187e7c47589ca2875e4007015c7536aede7f
       project: DML_PL
-      group: baselines
+      group: debug #baselines
       savename: test
 
   modelcheckpoint:
