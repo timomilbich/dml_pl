@@ -229,7 +229,6 @@ if __name__ == "__main__":
         trainer_kwargs["logger"] = wandb_logger
 
         # Setup modelcheckpoint callback
-        # lightning_config.modelcheckpoint['params']['dirpath'] = os.path.join(ckptdir, "{epoch:06}")
         lightning_config.modelcheckpoint['params']['dirpath'] = ckptdir
         checkpoint_callback = instantiate_from_config(lightning_config.modelcheckpoint)
 
