@@ -206,6 +206,11 @@ if __name__ == "__main__":
         trainer_opt = argparse.Namespace(**trainer_config)
         lightning_config.trainer = trainer_config
 
+        # Initialize data
+        data = instantiate_from_config(config.data)
+        config.model.params.config.Evaluation.params.n_classes = data.datasets['validation'].n_classes
+        config.model.params.config.Loss.params.n_classes = data.datasets['train'].n_classes
+
         # Initialize model from config
         model = instantiate_from_config(config.model)
 
@@ -239,8 +244,6 @@ if __name__ == "__main__":
         ## Define Trainer
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
 
-        # data
-        data = instantiate_from_config(config.data)
         # NOTE according to https://pytorch-lightning.readthedocs.io/en/latest/datamodules.html
         # calling these ourselves should not be necessary but it is.
         # lightning still takes care of proper multiprocessing though

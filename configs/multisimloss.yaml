@@ -8,11 +8,11 @@ model:
   params:
     config:
       Architecture:
-        target: architectures.bninception.Network
+        target: architectures.deit.Network
         params:
           pretraining: "imagenet"
-          embed_dim: 512
-          arch: "bninception_frozen_normalize"
+          embed_dim: 128 # 512
+          arch: "deit_small_patch16_224_normalize" #"bninception_frozen_normalize"
 
       Loss:
         target: criteria.select
@@ -20,7 +20,7 @@ model:
         params:
           name: "multisimilarity"
           batchminer:
-          n_classes: 100
+          n_classes: -1
           loss_multisimilarity_pos_weight: 2
           loss_multisimilarity_neg_weight: 40
           loss_multisimilarity_margin: 0.1
@@ -29,19 +29,11 @@ model:
           loss_multisimilarity_base_mode: 1
           loss_multisimilarity_d_mode: 'cosine'
 
-      Batchmining:
-        target: batchminer.select
-        name: "distance"
-        params:
-          name: "distance"
-          miner_distance_lower_cutoff: 0.5
-          miner_distance_upper_cutoff: 1.4
-
       Evaluation:
         target: metrics.metric_computer.MetricComputer
         params:
           metric_names: ["e_recall@1", "nmi"]
-          n_classes: 100
+          n_classes: -1
           evaluate_on_gpu: True
           num_workers: 0
 
@@ -55,11 +47,11 @@ data:
     num_workers: 20
 
     train:
-      target: data.CUB200.CUB200DATA
+      target: data.CUB200.DATA
       params: 
-        root: "/export/home/karoth/Datasets/cub200/"
+        root:
         train: True
-        arch: "bninception_frozen_normalize"
+        arch: "deit_small_patch16_224_normalize"
       data_sampler:
         target: datasampler.select
         params:
@@ -67,11 +59,11 @@ data:
           samples_per_class: 2
 
     validation:
-      target: data.CUB200.CUB200DATA
+      target: data.CUB200.DATA
       params:
-        root: "/export/home/karoth/Datasets/cub200/"
+        root:
         train: False
-        arch: "bninception_frozen_normalize"
+        arch: "deit_small_patch16_224_normalize"
 
 lightning:
   trainer:
@@ -85,6 +77,7 @@ lightning:
     log_every_n_steps: 25
     check_val_every_n_epoch: 1
     max_epochs: 100
+    num_sanity_val_steps: -1
 
   logger:
     target: pytorch_lightning.loggers.WandbLogger

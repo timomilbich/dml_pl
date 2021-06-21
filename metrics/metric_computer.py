@@ -13,7 +13,6 @@ class MetricComputer():
         self.evaluate_on_gpu = evaluate_on_gpu
         self.metric_names    = metric_names
         self.num_workers = num_workers
-        # self.list_of_metrics = [select(metricname, opt) for metricname in metric_names]
         self.list_of_metrics = [select(metricname) for metricname in metric_names]
         self.requires        = [metric.requires for metric in self.list_of_metrics]
         self.requires        = list(set([x for y in self.requires for x in y]))
@@ -21,14 +20,12 @@ class MetricComputer():
     def compute_standard(self, features, target_labels, device):
 
         ###
-        # .cpu().detach().numpy().tolist())
         target_labels = np.hstack(target_labels.cpu().detach().numpy()).reshape(-1,1)
         features = features.cpu().detach().numpy().astype(np.float32)
         computed_metrics = dict()
 
         ### Init faiss
         faiss.omp_set_num_threads(self.num_workers)
-        # faiss.omp_set_num_threads(self.pars.kernels)
         res = None
         torch.cuda.empty_cache()
         if self.evaluate_on_gpu:

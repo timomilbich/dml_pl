@@ -26,9 +26,9 @@ class DATA(Dataset):
         super(DATA, self).__init__()
 
         self.train = train  # training set or test set
-        self.root = root
+        self.root = "/export/home/karoth/Datasets/cars196/" if root is None else root
 
-        image_sourcepath = root + '/images'
+        image_sourcepath = self.root + '/images'
         image_classes = sorted([x for x in os.listdir(image_sourcepath)])
         total_conversion = {i: x for i, x in enumerate(image_classes)}
         image_list = {
@@ -61,17 +61,12 @@ class DATA(Dataset):
             train_dataset = BaseDataset(train_image_dict, arch)
             train_dataset.conversion = train_conversion
             self.dataset = train_dataset
-            print(f'Dataset Setup (Train)): #Classes: {len(train_image_dict)}')
+            print(f'Dataset (CARS196) Setup (Train): #Classes: {len(train_image_dict)}')
         else:
             test_dataset = BaseDataset(test_image_dict, arch, is_validation=True)
             test_dataset.conversion = test_conversion
             self.dataset = test_dataset
-            print(f'Dataset Setup (Val)): #Classes: {len(test_image_dict)}\n')
-
-        # eval_dataset = BaseDataset(train_image_dict, opt, is_validation=True)
-        # eval_train_dataset = BaseDataset(train_image_dict, opt, is_validation=False)
-        # eval_dataset.conversion = test_conversion
-        # eval_train_dataset.conversion = train_conversion
+            print(f'Dataset (CARS196) Setup (Val): #Classes: {len(test_image_dict)}\n')
 
     def __getitem__(self, idx):
         return self.dataset.__getitem__(idx)

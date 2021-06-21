@@ -27,7 +27,7 @@ class DML_Model(pl.LightningModule):
         ## Init loss
         batchminer = instantiate_from_config(config["Batchmining"]) if "Batchmining" in config.keys() else None
         config["Loss"]["params"]['batchminer'] = batchminer
-        self.loss    = instantiate_from_config(config["Loss"])
+        self.loss = instantiate_from_config(config["Loss"])
 
         ## Init constom log scripts
         self.custom_logs = instantiate_from_config(config["CustomLogs"])
