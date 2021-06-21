@@ -18,13 +18,20 @@ class BaseDataset(Dataset):
         #####
         self.init_setup()
 
-
         #####
-        if 'bninception' not in self.arch:
-            self.f_norm = normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
-        else:
+        if 'clip' in self.arch:
+            self.f_norm = normalize = transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073],std=[0.26862954, 0.26130258, 0.27577711])
+        elif 'bninception' in self.arch:
             self.f_norm = normalize = transforms.Normalize(mean=[0.502, 0.4588, 0.4078],std=[0.0039, 0.0039, 0.0039])
+        else:
+            self.f_norm = normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
         self.crop_size = crop_im_size = 224 if 'googlenet' not in self.arch else 227
+
+        # if 'bninception' not in self.arch:
+        #     self.f_norm = normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
+        # else:
+        #     self.f_norm = normalize = transforms.Normalize(mean=[0.502, 0.4588, 0.4078],std=[0.0039, 0.0039, 0.0039])
+        # self.crop_size = crop_im_size = 224 if 'googlenet' not in self.arch else 227
 
         #############
         self.normal_transform = []
@@ -34,15 +41,6 @@ class BaseDataset(Dataset):
             self.normal_transform.extend([transforms.Resize(256), transforms.CenterCrop(crop_im_size)])
         self.normal_transform.extend([transforms.ToTensor(), normalize])
         self.normal_transform = transforms.Compose(self.normal_transform)
-
-        if 'clip' in self.arch:
-            self.normal_transform = transforms.Compose([
-                transforms.Resize(256, interpolation=Image.BICUBIC),
-                transforms.CenterCrop(crop_im_size),
-                lambda image: image.convert("RGB"),
-                transforms.ToTensor(),
-                transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
-            ])
 
     def init_setup(self):
         self.n_files       = np.sum([len(self.image_dict[key]) for key in self.image_dict.keys()])

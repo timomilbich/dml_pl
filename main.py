@@ -1,15 +1,12 @@
 import argparse, os, sys, datetime, glob
 import wandb
 from omegaconf import OmegaConf
-import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 from pytorch_lightning.trainer import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from utils.auxiliaries import instantiate_from_config, nondefault_trainer_args
 from utils.callbacks import SetupCallback
 from pytorch_lightning.profiler import SimpleProfiler, AdvancedProfiler
-import torchvision
-import torch
 
 
 def get_parser(**parser_kwargs):
