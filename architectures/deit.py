@@ -5,7 +5,7 @@ import torch, torch.nn as nn
 from timm.models.vision_transformer import VisionTransformer, _cfg
 
 
-def select(arch, pretrained=True, **kwargs):
+def select_model(arch, pretrained=True, **kwargs):
     if 'deit_tiny_patch16_224' in arch:
         return deit_tiny_patch16_224(pretrained=pretrained, **kwargs)
     elif 'deit_small_patch16_224' in arch:
@@ -108,7 +108,7 @@ class Network(torch.nn.Module):
         self.arch  = arch
         self.embed_dim = embed_dim
         self.name = self.arch
-        self.features, embed_dim_model = select(arch, pretrained=True if pretraining is not None else False)
+        self.features, embed_dim_model = select_model(arch, pretrained=True if pretraining is not None else False)
         self.last_linear = torch.nn.Linear(embed_dim_model, embed_dim) if embed_dim > 0 else nn.Identity()
 
         print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')

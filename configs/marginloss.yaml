@@ -8,11 +8,11 @@ model:
   params:
     config:
       Architecture:
-        target: architectures.deit.Network
+        target: architectures.clip.Network
         params:
           pretraining: "imagenet"
           embed_dim: 128
-          arch: "deit_small_patch16_224_normalize" # deit_small_patch16_224, resnet50_frozen_normalize
+          arch: "clip_resnet50_normalize" # deit_small_patch16_224, resnet50_frozen_normalize
 
       Loss:
         target: criteria.select
@@ -57,7 +57,7 @@ data:
       params: 
         root:
         train: True
-        arch: "deit_small_patch16_224_normalize" # resnet50_frozen_normalize
+        arch: "clip_resnet50_normalize" # resnet50_frozen_normalize
       data_sampler:
         target: datasampler.select
         params:
@@ -69,7 +69,7 @@ data:
       params:
         root:
         train: False
-        arch: "deit_small_patch16_224_normalize" # resnet50_frozen_normalize
+        arch: "clip_resnet50_normalize" # resnet50_frozen_normalize
 
 lightning:
   trainer:

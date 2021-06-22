@@ -8,11 +8,11 @@ model:
   params:
     config:
       Architecture:
-        target: architectures.deit.Network
+        target: architectures.clip.Network
         params:
           pretraining: "imagenet"
           embed_dim: 128 # 512
-          arch: "deit_small_patch16_224_normalize" #"bninception_frozen_normalize"
+          arch: "clip_normalize" #"bninception_frozen_normalize"
 
       Loss:
         target: criteria.select
@@ -51,7 +51,7 @@ data:
       params: 
         root:
         train: True
-        arch: "deit_small_patch16_224_normalize"
+        arch: "clip_normalize"
       data_sampler:
         target: datasampler.select
         params:
@@ -63,7 +63,7 @@ data:
       params:
         root:
         train: False
-        arch: "deit_small_patch16_224_normalize"
+        arch: "clip_normalize"
 
 lightning:
   trainer:
