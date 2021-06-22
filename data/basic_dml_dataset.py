@@ -23,6 +23,8 @@ class BaseDataset(Dataset):
             self.f_norm = normalize = transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073],std=[0.26862954, 0.26130258, 0.27577711])
         elif 'bninception' in self.arch:
             self.f_norm = normalize = transforms.Normalize(mean=[0.502, 0.4588, 0.4078],std=[0.0039, 0.0039, 0.0039])
+        elif 'vit' in self.arch:
+            self.f_norm = normalize = transforms.Normalize(mean=[0.5, 0.5, 0.5],std=[0.5, 0.5, 0.5])
         else:
             self.f_norm = normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
         self.crop_size = crop_im_size = 224 if 'googlenet' not in self.arch else 227
