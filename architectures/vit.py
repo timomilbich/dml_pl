@@ -7,7 +7,7 @@ import timm.models.vision_transformer as timm_vit
 
 def select_model(arch, pretrained=True, **kwargs):
     if 'vit_base_patch32_224' in arch:
-        return timm_vit.vit_base_patch32_224(pretrained=pretrained is not None, **kwargs), 768
+        return timm_vit.vit_base_patch32_224_in21k(pretrained=pretrained, **kwargs), 768 # CHECK IF NEW TIMM PIP IS AVAILABLE TO USE NORMAL IMAGENET
     else:
         raise NotImplemented(f'Architecture {arch} has not been found.')
 
