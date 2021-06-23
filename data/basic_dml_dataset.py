@@ -1,6 +1,5 @@
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
-from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 import numpy as np
 from PIL import Image
 

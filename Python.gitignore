@@ -1,5 +1,6 @@
 # Datafolders
 architectures/pretrained_weights/*.pth
+third_party
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
