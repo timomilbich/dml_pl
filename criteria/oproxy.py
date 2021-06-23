@@ -10,7 +10,7 @@ REQUIRES_OPTIM      = True
 
 
 class Criterion(torch.nn.Module):
-    def __init__(self, opt):
+    def __init__(self, opt, **kwargs):
         """
         Args:
             opt: Namespace containing all relevant parameters.
@@ -55,7 +55,7 @@ class Criterion(torch.nn.Module):
         ###
         self.unique         = opt.loss_oproxy_unique
         self.f_soft = torch.nn.Softplus()
-        self.optim_dict_list.append({'params':self.f_soft.parameters(), 'lr':opt.lr*opt.loss_oproxy_lrmulti})
+        self.optim_dict_list.append({'params':self.f_soft.parameters(), 'lr':opt.lr * opt.loss_oproxy_lrmulti})
 
         ###
         self.warmup_it    = opt.loss_oproxy_warmup_it
@@ -87,7 +87,9 @@ class Criterion(torch.nn.Module):
         else:
             self.u_labels, self.freq = self.labels.view(-1), None
         self.same_labels = (self.labels.T == self.u_labels.view(-1,1)).to(batch.device).T
-        self.diff_labels = (self.class_idxs.unsqueeze(1) != self.labels.T).to(torch.float).to(batch.device).T
+
+        class_idxs = self.class_idxs.to(batch.device)
+        self.diff_labels = (class_idxs.unsqueeze(1) != self.labels.T).to(torch.float).to(batch.device).T
 
         ###
         if self.mode == "anchor":
