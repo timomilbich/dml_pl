@@ -8,11 +8,11 @@ model:
   params:
     config:
       Architecture:
-        target: architectures.clip.Network
+        target: architectures.bninception.Network
         params:
           pretraining: "imagenet"
-          embed_dim: 128 # 512
-          arch: "clip_resnet50_normalize" #"bninception_frozen_normalize"
+          embed_dim: 512 # 512
+          arch: "bninception_frozen_normalize" #"bninception_frozen_normalize"
 
       Loss:
         target: criteria.select
@@ -51,7 +51,7 @@ data:
       params: 
         root:
         train: True
-        arch: "clip_resnet50_normalize"
+        arch: "bninception_frozen_normalize"
       data_sampler:
         target: datasampler.select
         params:
@@ -63,7 +63,7 @@ data:
       params:
         root:
         train: False
-        arch: "clip_resnet50_normalize"
+        arch: "bninception_frozen_normalize"
 
 lightning:
   trainer:
