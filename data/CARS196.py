@@ -27,6 +27,7 @@ class DATA(Dataset):
 
         self.train = train  # training set or test set
         self.root = "/export/home/karoth/Datasets/cars196/" if root is None else root
+        self.n_classes = 98
 
         image_sourcepath = self.root + '/images'
         image_classes = sorted([x for x in os.listdir(image_sourcepath)])
