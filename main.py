@@ -265,11 +265,8 @@ if __name__ == "__main__":
 
         # run
         if opt.train:
-            # train model
             trainer.tune(model, data)
             trainer.fit(model, data)
-        # if not opt.no_test and not trainer.interrupted:
-        #     # TODO provide option to change test_step of model
         #     trainer.test(model, data)
     except Exception:
         # move newly created debug project to debug_runs
