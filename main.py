@@ -267,7 +267,7 @@ if __name__ == "__main__":
         if opt.train:
             trainer.tune(model, data)
             trainer.fit(model, data)
-        #     trainer.test(model, data)
+            trainer.test(model, data)
     except Exception:
         # move newly created debug project to debug_runs
         raise
