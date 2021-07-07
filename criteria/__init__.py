@@ -33,6 +33,7 @@ losses = {'triplet': triplet,
 def select(name, batchminer, **kwargs):
 
     if name not in losses: raise NotImplementedError('Loss {} not implemented!'.format(name))
+    print(f"OPTIMIZATION CRITERION:\ntype: {name}")
 
     loss_lib = losses[name]
     if loss_lib.REQUIRES_BATCHMINER:
@@ -42,24 +43,15 @@ def select(name, batchminer, **kwargs):
             if batchminer.name not in loss_lib.ALLOWED_MINING_OPS:
                 raise Exception('{}-mining not allowed for {}-loss!'.format(batchminer.name, name))
 
-
     opt = argparse.Namespace(**kwargs)
-    loss_par_dict  = {'opt':opt}
+    loss_par_dict = {'opt': opt}
     if loss_lib.REQUIRES_BATCHMINER:
         loss_par_dict['batchminer'] = batchminer
+        print(f"Batchmining enabled: {batchminer.name}\n")
+    else:
+        print(f"Batchmining disabled.\n")
 
     criterion = loss_lib.Criterion(**loss_par_dict)
-
-    # if to_optim is not None:
-    #     if loss_lib.REQUIRES_OPTIM:
-    #         if hasattr(criterion,'optim_dict_list') and criterion.optim_dict_list is not None:
-    #             to_optim += criterion.optim_dict_list
-    #         else:
-    #             to_optim    += [{'params':criterion.parameters(), 'lr':criterion.lr}]
-    #
-    #     return criterion, to_optim
-    # else:
-    #     return criterion
 
     return criterion
 

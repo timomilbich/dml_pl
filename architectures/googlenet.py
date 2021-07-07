@@ -21,7 +21,7 @@ class Network(torch.nn.Module):
 
         self.name = self.arch
 
-        print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')
+        print(f'ARCHITECTURE:\ntype: {self.arch}\nembed_dims: {self.embed_dim}\n')
 
 
     def forward(self, x):

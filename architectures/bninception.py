@@ -28,7 +28,7 @@ class Network(torch.nn.Module):
         self.pool_base = F.avg_pool2d
         self.pool_aux  = F.max_pool2d if 'double' in self.arch else None
 
-        print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')
+        print(f'ARCHITECTURE:\ntype: {self.arch}\nembed_dims: {self.embed_dim}\n')
 
     def forward(self, x, warmup=False, **kwargs):
         x = self.model.features(x)

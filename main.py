@@ -239,29 +239,13 @@ if __name__ == "__main__":
 
         ## Define Trainer
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
-
-        # NOTE according to https://pytorch-lightning.readthedocs.io/en/latest/datamodules.html
-        # calling these ourselves should not be necessary but it is.
-        # lightning still takes care of proper multiprocessing though
-        #
-        # data.prepare_data()
-        # data.setup()
-
-        # configure learning rate
-        # bs, base_lr, ngpu = config.data.params.batch_size, config.model.base_learning_rate, len(
-        #     GPUs.strip(",").split(','))
-        # accumulate_grad_batches = lightning_config.trainer.accumulate_grad_batches or 1
-        # model.learning_rate = accumulate_grad_batches * ngpu * bs * base_lr
-        # print("Setting learning rate to {:.2e} = {} (accumulate_grad_batches) * {} (num_gpus) * {} (batchsize) * {:.2e} (base_lr)".format(
-        #     model.learning_rate, accumulate_grad_batches, ngpu, bs, base_lr))
-
         weight_decay, gamma, scheduler, tau = config.model.weight_decay, config.model.gamma, config.model.scheduler, config.model.tau
         model.weight_decay = weight_decay
         model.gamma = gamma
         model.tau = tau
         bs, base_lr = config.data.params.batch_size, config.model.base_learning_rate
         model.learning_rate = base_lr
-        print(f"Optimizer paramters set to: \nlearning rate: {model.learning_rate}\nweight_decay: {weight_decay}\nscheduler: {scheduler}\ngamma: {gamma}\ntau: {tau}")
+        print(f"TRAINING PARAMETERS: \nlearning rate: {model.learning_rate}\nweight_decay: {weight_decay}\nscheduler: {scheduler}\ngamma: {gamma}\ntau: {tau}\n")
 
         # run
         if opt.train:

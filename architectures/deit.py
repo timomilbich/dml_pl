@@ -111,7 +111,7 @@ class Network(torch.nn.Module):
         self.features, embed_dim_model = select_model(arch, pretrained=True if pretraining is not None else False)
         self.last_linear = torch.nn.Linear(embed_dim_model, embed_dim) if embed_dim > 0 else nn.Identity()
 
-        print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')
+        print(f'ARCHITECTURE:\ntype: {self.arch}\nembed_dims: {self.embed_dim}\n')
 
 
     def forward(self, x):

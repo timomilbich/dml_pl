@@ -29,7 +29,7 @@ class Network(torch.nn.Module):
         self.pool_base = torch.nn.AdaptiveAvgPool2d(1)
         self.pool_aux  = torch.nn.AdaptiveMaxPool2d(1) if 'double' in self.arch else None
 
-        print(f'Architecture:\ntype: {self.arch}\nembed_dims: {self.embed_dim}')
+        print(f'ARCHITECTURE:\ntype: {self.arch}\nembed_dims: {self.embed_dim}\n')
 
 
     def forward(self, x, warmup=False, **kwargs):
