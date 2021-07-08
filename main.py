@@ -235,7 +235,9 @@ if __name__ == "__main__":
             logging_callbacks = [instantiate_from_config(lightning_config.callbacks[k]) for k in lightning_config.callbacks]
         else:
             logging_callbacks = []
-        trainer_kwargs["callbacks"] = [setup_callback, checkpoint_callback, *logging_callbacks]
+        trainer_kwargs["callbacks"] = [setup_callback, *logging_callbacks]
+        if not opt.debug:
+            trainer_kwargs["callbacks"] += [checkpoint_callback]
 
         ## Define Trainer
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)

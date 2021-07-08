@@ -1,5 +1,5 @@
 ### Standard DML criteria
-from criteria import triplet, margin, proxynca, npair
+from criteria import triplet, margin, proxynca, npair, simsiam
 from criteria import lifted, contrastive, softmax, ep
 from criteria import angular, snr, histogram, arcface, proxyanchor, proxyanchor_orig, oproxy
 from criteria import softtriplet, multisimilarity, quadruplet
@@ -26,6 +26,7 @@ losses = {'triplet': triplet,
           'proxyanchor': proxyanchor,
           'quadruplet': quadruplet,
           'proxyanchor_orig': proxyanchor_orig,
+          'simsiam': simsiam,
           }
 
 """================================================================================================="""
@@ -49,6 +50,7 @@ def select(name, batchminer, **kwargs):
         loss_par_dict['batchminer'] = batchminer
         print(f"Batchmining enabled: {batchminer.name}\n")
     else:
+        loss_par_dict['batchminer'] = None
         print(f"Batchmining disabled.\n")
 
     criterion = loss_lib.Criterion(**loss_par_dict)

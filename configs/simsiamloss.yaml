@@ -8,31 +8,23 @@ model:
   params:
     config:
       Architecture:
-        target: architectures.bninception.Network
+        target: architectures.vit.Network
         params:
           pretraining: "imagenet"
-          embed_dim: 512
-          arch: "bninception_frozen_normalize" # deit_small_patch16_224, resnet50_frozen_normalize
+          embed_dim: -1
+          arch: "vit_small_patch16_224_normalize" # deit_small_patch16_224, resnet50_frozen_normalize
 
       Loss:
         target: criteria.select
-        name: "oproxy"
+        name: "simsiam"
         params:
-          name: "oproxy"
+          name: "simsiam"
           batchminer:
           n_classes: -1
           embed_dim: 384 # equal to general model embed_dim
-          lr: 0.00001 # equal to general model lr
-          loss_oproxy_lrmulti: 2000
-          loss_oproxy_pos_alpha: 32
-          loss_oproxy_pos_delta: 0.1
-          loss_oproxy_neg_alpha: 32
-          loss_oproxy_neg_delta: 0.1
-          loss_oproxy_mode: "anchor"
-          loss_oproxy_detach_proxies: False
-          loss_oproxy_euclidean: False
-          loss_oproxy_unique: False
-          loss_oproxy_warmup_it: 0
+          pred_dim: 384 # predictor dimensionality
+          pred_lr: 0.00001 # equal to general model lr
+          n_warmup_iterations: 150 # number of iterations of detached backbone
 
       Evaluation:
         target: metrics.metric_computer.MetricComputer
@@ -56,7 +48,7 @@ data:
       params: 
         root:
         train: True
-        arch: "bninception_frozen_normalize" # resnet50_frozen_normalize
+        arch: "vit_small_patch16_224_normalize" # resnet50_frozen_normalize
       data_sampler:
         target: datasampler.select
         params:
@@ -68,7 +60,7 @@ data:
       params:
         root:
         train: False
-        arch: "bninception_frozen_normalize" # resnet50_frozen_normalize
+        arch: "vit_small_patch16_224_normalize" # resnet50_frozen_normalize
 
 lightning:
   trainer:
