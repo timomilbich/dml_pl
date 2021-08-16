@@ -12,7 +12,7 @@ class Network(torch.nn.Module):
 
         self.arch = arch
         self.embed_dim = embed_dim
-        self.model = ptm.__dict__['resnet50'](num_classes=1000, pretrained=pretraining if pretraining=='imagenet' else None)
+        self.model = ptm.__dict__['resnet18'](num_classes=1000, pretrained=pretraining if pretraining=='imagenet' else None)
         self.name = self.arch
 
         if 'frozen' in self.arch:

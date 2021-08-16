@@ -108,15 +108,17 @@ class Network(torch.nn.Module):
         self.arch  = arch
         self.embed_dim = embed_dim
         self.name = self.arch
-        self.features, embed_dim_model = select_model(arch, pretrained=True if pretraining is not None else False)
-        self.last_linear = torch.nn.Linear(embed_dim_model, embed_dim) if embed_dim > 0 else nn.Identity()
+        self.features, embed_dim_model = select_model(arch, pretrained=True if pretraining=='imagenet' else False)
+        # self.embed = torch.nn.Linear(embed_dim_model, embed_dim) if embed_dim > 0 else nn.Identity()
+        self.embed = nn.Sequential(nn.ReLU(inplace=True), nn.Linear(embed_dim_model, embed_dim)) if embed_dim > 0 else nn.Identity()
+
 
         print(f'ARCHITECTURE:\ntype: {self.arch}\nembed_dims: {self.embed_dim}\n')
 
 
     def forward(self, x):
         x = self.features.forward_features(x)
-        z = self.last_linear(x)
+        z = self.embed(x)
 
         if 'normalize' in self.arch:
             z = torch.nn.functional.normalize(z, dim=-1)
