@@ -11,9 +11,9 @@ echo "EXP_PATH: ${EXP_PATH}"
 
 # baselines no pretraining
 python main.py 'model.params.config.Architecture.params.embed_dim=128' 'lightning.logger.params.group=baselines_nopretrain' 'lightning.trainer.max_epochs=60' \
-               'model.params.config.Architecture.target=architectures.resnet50.Network' 'model.params.config.Architecture.params.arch=resnet50_frozen_normalize' \
-               'model.params.config.Architecture.params.pretraining=none' 'model.base_learning_rate=1e-5' 'model.weight_decay=0'\
-               'data.params.train.params.arch=resnet50_frozen_normalize' 'data.params.validation.params.arch=resnet50_frozen_normalize' \
+               'model.params.config.Architecture.target=architectures.resnet18.Network' 'model.params.config.Architecture.params.arch=resnet18_normalize' \
+               'model.params.config.Architecture.params.pretraining=none' 'model.base_learning_rate=1e-1' \
+               'data.params.train.params.arch=resnet18_normalize' 'data.params.validation.params.arch=resnet18_normalize' \
                'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
                --savename msloss_resnet50_frozen_normalize_128_cub200_nopretrain --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
 

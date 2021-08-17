@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
 from .basic_dml_dataset import BaseDataset
+import pickle as pkl
+import os
 
 
 class DATA(Dataset):
@@ -23,13 +25,18 @@ class DATA(Dataset):
             root,
             train = True,
             arch = 'resnet50',
-            ):
+            ooDML_split_id=-1,
+    ):
 
         super(DATA, self).__init__()
 
         self.train = train  # training set or test set
         self.root = "/export/home/karoth/Datasets/online_products/" if root is None else root
         self.n_classes = 11318 # number of train classes
+        self.path_ooDML_splits = "/export/home/tmilbich/PycharmProjects/dml_pl/data/ooDML_splits/online_products_splits.pkl"
+
+        if ooDML_split_id > -1:
+            raise Exception('ooDML data splits are currently not implemented!')
 
         image_sourcepath = self.root + '/images'
         training_files = pd.read_table(self.root + '/Info_Files/Ebay_train.txt', header=0, delimiter=' ')
@@ -97,4 +104,10 @@ class DATA(Dataset):
 
     def __len__(self):
         return len(self.dataset)
+
+
+    def load_oodDML_split(self, split_id=1):
+        split_dict = pkl.load(open(self.path_ooDML_splits, 'rb'))
+        train_classes, test_classes, fid = split_dict[split_id]['train'], split_dict[split_id]['test'], split_dict[split_id]['fid']
+        return train_classes, test_classes, fid
 

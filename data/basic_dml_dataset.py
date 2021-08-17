@@ -3,13 +3,13 @@ import torchvision.transforms as transforms
 import numpy as np
 from PIL import Image
 
-
 """==================================================================================================="""
 ################## BASIC PYTORCH DATASET USED FOR ALL DATASETS ##################################
 class BaseDataset(Dataset):
     def __init__(self, image_dict, arch, is_validation=False):
         self.is_validation = is_validation
         self.arch        = arch
+        self.path_ooDML_splits = None
 
         #####
         self.image_dict = image_dict
@@ -27,12 +27,6 @@ class BaseDataset(Dataset):
         else:
             self.f_norm = normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
         self.crop_size = crop_im_size = 224 if 'googlenet' not in self.arch else 227
-
-        # if 'bninception' not in self.arch:
-        #     self.f_norm = normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
-        # else:
-        #     self.f_norm = normalize = transforms.Normalize(mean=[0.502, 0.4588, 0.4078],std=[0.0039, 0.0039, 0.0039])
-        # self.crop_size = crop_im_size = 224 if 'googlenet' not in self.arch else 227
 
         #############
         self.normal_transform = []
@@ -62,7 +56,6 @@ class BaseDataset(Dataset):
         self.image_paths = self.image_list
 
         self.is_init = True
-
 
     def ensure_3dim(self, img):
         if len(img.size)==2:
