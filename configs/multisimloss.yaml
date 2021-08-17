@@ -51,7 +51,7 @@ data:
       params: 
         root:
         train: True
-        ooDML_split_id: 1
+        ooDML_split_id: -1
         arch: "vit_small_patch16_224_normalize"
       data_sampler:
         target: datasampler.select
@@ -64,7 +64,7 @@ data:
       params:
         root:
         train: False
-        ooDML_split_id: 1
+        ooDML_split_id: -1
         arch: "vit_small_patch16_224_normalize"
 
 lightning:
