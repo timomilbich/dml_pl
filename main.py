@@ -203,14 +203,6 @@ if __name__ == "__main__":
         trainer_opt = argparse.Namespace(**trainer_config)
         lightning_config.trainer = trainer_config
 
-        # Initialize data
-        data = instantiate_from_config(config.data)
-        config.model.params.config.Evaluation.params.n_classes = data.datasets['validation'].n_classes
-        config.model.params.config.Loss.params.n_classes = data.datasets['train'].n_classes
-
-        # Initialize model from config
-        model = instantiate_from_config(config.model)
-
         ##
         trainer_kwargs = dict()
 
@@ -222,8 +214,16 @@ if __name__ == "__main__":
         wandb_id = wandb.util.generate_id()
         wandb_logger = WandbLogger(opt.savename, logdir, project=lightning_config.logger['params']['project'], offline=opt.debug,
                                    group=lightning_config.logger['params']['group'], id=wandb_id)
-        wandb_logger.log_hyperparams(config.model)
+        wandb_logger.log_hyperparams(config)
         trainer_kwargs["logger"] = wandb_logger
+
+        # Initialize data
+        data = instantiate_from_config(config.data)
+        config.model.params.config.Evaluation.params.n_classes = data.datasets['validation'].n_classes
+        config.model.params.config.Loss.params.n_classes = data.datasets['train'].n_classes
+
+        # Initialize model from config
+        model = instantiate_from_config(config.model)
 
         # Setup modelcheckpoint callback
         lightning_config.modelcheckpoint['params']['dirpath'] = ckptdir
