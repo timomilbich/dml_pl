@@ -1,4 +1,4 @@
-export GPU_TRAINING=9,
+export GPU_TRAINING=7,
 echo "GPUs: ${GPU_TRAINING}"
 export EXP_PATH='/export/data/tmilbich/PycharmProjects/dml_pl/experiments/training_models'
 echo "EXP_PATH: ${EXP_PATH}"
@@ -9,7 +9,7 @@ echo "EXP_PATH: ${EXP_PATH}"
 # ... multisimilarity loss #
 ############################
 
-# baseline (BNInception) - SOP
+# baseline (Resnet50) - SOP
 python main.py 'model.params.config.Architecture.params.embed_dim=384' 'lightning.logger.params.group=ooDML_msloss' 'lightning.trainer.max_epochs=100' \
                'model.params.config.Architecture.target=architectures.resnet50.Network' 'model.params.config.Architecture.params.arch=resnet50_frozen_normalize' \
                'data.params.train.params.arch=resnet50_frozen_normalize' 'data.params.validation.params.arch=resnet50_frozen_normalize' \

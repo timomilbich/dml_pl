@@ -34,50 +34,57 @@ class DATA(Dataset):
         self.root = "/export/home/karoth/Datasets/online_products/" if root is None else root
         self.n_classes = 11318 # number of train classes
         self.path_ooDML_splits = "/export/home/tmilbich/PycharmProjects/dml_pl/data/ooDML_splits/online_products_splits.pkl"
+
+        if ooDML_split_id > -1:
+            raise Exception('ooDML data splits are currently not implemented!')
+
         image_sourcepath = self.root + '/images'
         training_files = pd.read_table(self.root + '/Info_Files/Ebay_train.txt', header=0, delimiter=' ')
         test_files = pd.read_table(self.root + '/Info_Files/Ebay_test.txt', header=0, delimiter=' ')
 
-        # super_dict = {}
+        spi = np.array([(a, b) for a, b in zip(training_files['super_class_id'], training_files['class_id'])])
+        super_dict = {}
         super_conversion = {}
-        class_dict = {}
-        class_conversion = {}
+        for i, (super_ix, class_ix, image_path) in enumerate(
+                zip(training_files['super_class_id'], training_files['class_id'], training_files['path'])):
+            if super_ix not in super_dict: super_dict[super_ix] = {}
+            if class_ix not in super_dict[super_ix]: super_dict[super_ix][class_ix] = []
+            super_dict[super_ix][class_ix].append(image_sourcepath + '/' + image_path)
+        train_image_dict = super_dict
 
-        for i, (super_ix, class_ix, image_path) in enumerate(zip(training_files['super_class_id'], training_files['class_id'], training_files['path'])):
-            # if super_ix not in super_dict: super_dict[super_ix] = {}
-            # if class_ix not in super_dict[super_ix]: super_dict[super_ix][class_ix] = []
-            # super_dict[super_ix][class_ix].append(image_sourcepath + '/' + image_path)
+        ####
+        test_image_dict = {}
+        train_image_dict_temp = {}
+        super_train_image_dict = {}
+        train_conversion = {}
+        test_conversion = {}
+        super_test_conversion = {}
 
-            class_ix -= 1 # let class ids start with 0
+        ## Create Training Dictionaries
+        i = 0
+        for super_ix, super_set in train_image_dict.items():
+            super_ix -= 1
+            counter = 0
+            super_train_image_dict[super_ix] = []
+            for class_ix, class_set in super_set.items():
+                class_ix -= 1
+                super_train_image_dict[super_ix].extend(class_set)
+                train_image_dict_temp[class_ix] = class_set
+                if class_ix not in train_conversion:
+                    train_conversion[class_ix] = class_set[0].split('/')[-1].split('_')[0]
+                    super_conversion[class_ix] = class_set[0].split('/')[-2]
+                counter += 1
+                i += 1
+        train_image_dict = train_image_dict_temp
 
-            if class_ix not in class_dict: class_dict[class_ix] = []
-            class_dict[class_ix].append(image_sourcepath + '/' + image_path)
-            class_conversion[class_ix] = image_path.split('/')[-1].split('_')[0]
-
-        for i, (super_ix, class_ix, image_path) in enumerate(zip(test_files['super_class_id'], test_files['class_id'], test_files['path'])):
-            # if super_ix not in super_dict: super_dict[super_ix] = {}
-            # if class_ix not in super_dict[super_ix]: super_dict[super_ix][class_ix] = []
-            # super_dict[super_ix][class_ix].append(image_sourcepath + '/' + image_path)
-
-            class_ix -= 1 # let class ids start with 0
-
-            if class_ix not in class_dict: class_dict[class_ix] = []
-            class_dict[class_ix].append(image_sourcepath + '/' + image_path)
-            class_conversion[class_ix] = image_path.split('/')[-1].split('_')[0]
-
-        classes = [val for key,val in class_conversion.items()]
-        if ooDML_split_id == -1:
-            ### Use the 11318 classes as training and the remaining classes as test data (official split)
-            train, test = classes[:11318], classes[11318:]
-            fid = -1
-        else:
-            ### load ooDML splits
-            train, test, fid = self.load_oodDML_split(ooDML_split_id)
-
-        train_image_dict = {key: item for key, item in class_dict.items() if str(class_conversion[key]) in train}
-        test_image_dict = {key: item for key, item in class_dict.items() if str(class_conversion[key]) in test}
-        train_conversion = {i: classname for i, classname in enumerate(train)}
-        test_conversion = {i: classname for i, classname in enumerate(test)}
+        ## Create Test Dictioniaries
+        for class_ix, img_path in zip(test_files['class_id'], test_files['path']):
+            class_ix = class_ix - 1
+            if not class_ix in test_image_dict.keys():
+                test_image_dict[class_ix] = []
+            test_image_dict[class_ix].append(image_sourcepath + '/' + img_path)
+            test_conversion[class_ix] = img_path.split('/')[-1].split('_')[0]
+            super_test_conversion[class_ix] = img_path.split('/')[-2]
 
         ###
         if self.train:

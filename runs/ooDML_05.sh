@@ -1,4 +1,4 @@
-export GPU_TRAINING=8,
+export GPU_TRAINING=4,
 echo "GPUs: ${GPU_TRAINING}"
 export EXP_PATH='/export/data/tmilbich/PycharmProjects/dml_pl/experiments/training_models'
 echo "EXP_PATH: ${EXP_PATH}"
@@ -9,7 +9,7 @@ echo "EXP_PATH: ${EXP_PATH}"
 # ... multisimilarity loss #
 ############################
 
-# baseline (BNInception) - SOP
+# baseline (ViT-S-16-224) - SOP
 python main.py 'lightning.logger.params.group=ooDML_msloss' 'lightning.trainer.max_epochs=100' \
                'data.params.train.target=data.SOP.DATA' 'data.params.validation.target=data.SOP.DATA' \
                'data.params.train.params.ooDML_split_id=1' 'data.params.validation.params.ooDML_split_id=1' \
