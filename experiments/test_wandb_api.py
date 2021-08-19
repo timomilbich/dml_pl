@@ -26,6 +26,10 @@ runs_total = dict
 summary_list, config_list, name_list, group_list, data_list = [], [], [], [], []
 for run in tqdm(runs, desc='Collect wandb runs data'):
 
+    # only consider finised runs (not 'running', 'crashed', 'failed', etc.)
+    if run.state != "finished":
+        continue
+
     try:
         # .summary contains the output keys/values for metrics like accuracy.
         #  We call ._json_dict to omit large files

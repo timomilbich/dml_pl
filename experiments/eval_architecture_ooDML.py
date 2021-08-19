@@ -16,7 +16,7 @@ name_list, group_list, summary_list, config_list, data_list = experiments.get_wa
 
 project_group = 'ooDML_msloss'
 labelspace = 'arch'
-dataset = 'cars196' # 'cub200'
+dataset = 'cub200' # 'cub200'
 
 # filter runs data - project group
 ids_valid = [i for i, group in enumerate(group_list) if group == project_group]
@@ -30,7 +30,7 @@ data_list = [data_list[i] for i in ids_valid]
 
 # get labels
 labels_list = [d[labelspace] for d in data_list]
-labels_unique = list(set(labels_list))
+labels_unique = sorted(list(set(labels_list)))
 
 # gather ooDML progressions
 recall_seqs = {label: [] for label in labels_unique}
@@ -81,9 +81,6 @@ ax.grid()
 customstring = f'msloss'
 path_save = f'/export/home/tmilbich/PycharmProjects/dml_pl/experiments/plots/ooDML/eval_{labelspace}_{dataset}'
 path_save = "_".join([path_save, customstring])
-print(path_save)
-# if not os.path.isdir(path_save):
-#     os.makedirs(path_save)
 fig.savefig(path_save + '.png', dpi=600) # .svg'
 
 plt.show()
