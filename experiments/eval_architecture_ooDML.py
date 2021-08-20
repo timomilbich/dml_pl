@@ -16,7 +16,7 @@ name_list, group_list, summary_list, config_list, data_list = experiments.get_wa
 
 project_group = 'ooDML_msloss'
 labelspace = 'arch'
-dataset = 'cub200' # 'cub200'
+dataset = 'sop' # 'cub200'
 
 # filter runs data - project group
 ids_valid = [i for i, group in enumerate(group_list) if group == project_group]
@@ -42,20 +42,25 @@ for data in data_list:
     split_seqs[label_tmp].append(data['ooDML_split_id'])
 
 # sort progressions by split id
-n_x_ticks = -1
+n_x_ticks = []
 for label in labels_unique:
     recs = recall_seqs[label]
     split_ids = split_seqs[label]
 
-    # sort
+    # sort recall values
     recs = [x for _, x in sorted(zip(split_ids, recs))]
 
     # reassign
     recall_seqs[label] = recs
     split_seqs[label] = sorted(split_ids)
 
-    if n_x_ticks == -1:
-        n_x_ticks = len(recs)
+    n_x_ticks.append(len(recs))
+n_x_ticks = min(n_x_ticks)
+
+# cut data to n_x_ticks - to still be able to visualize experiments in progress
+for label in labels_unique:
+    recall_seqs[label] = recall_seqs[label][:n_x_ticks]
+    split_seqs[label] = split_seqs[label][:n_x_ticks]
 
 # plotting
 x_label = 'split_id'
@@ -69,7 +74,7 @@ fig, ax = plt.subplots(figsize=(5, 4))
 for i, label in enumerate(labels_unique):
     ax.plot(x_ticks, recall_seqs[label], label=f'{label}', marker='x', color=colors[i], linestyle=linestyles[i], alpha=alphas[i])
 
-leg = ax.legend(loc="best", shadow=True, fancybox=True, fontsize='x-small')
+leg = ax.legend(loc="best", shadow=True, fancybox=True, fontsize='xx-small')
 ax.set(xlabel=f'{x_label}', ylabel=f'{dataset} recall@1',
        title=f'Eval ooDML [{labelspace}] [384]')
 ax.set_xticks(x_ticks)

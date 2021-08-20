@@ -45,9 +45,12 @@ def get_wandb_data():
             run_data['r@1_max'] = np.max(np.nan_to_num(recallone_vals))
 
             ### get general run info
-            run_data['arch'] = run_config['params/config/Architecture/params/arch']
-            run_data['loss_function'] = run_config['params/config/Loss/params/name']
-            run_data['embed_dims'] = run_config['params/config/Architecture/params/embed_dim']
+            run_data['arch'] = run_config['params/config/Architecture/params/arch'] if 'params/config/Architecture/params/arch' in run_config.keys()\
+                else run_config['model/params/config/Architecture/params/arch']
+            run_data['loss_function'] = run_config['params/config/Loss/params/name'] if 'params/config/Loss/params/name'in run_config.keys()\
+                else run_config['model/params/config/Loss/params/name']
+            run_data['embed_dims'] = run_config['params/config/Architecture/params/embed_dim'] if 'params/config/Architecture/params/embed_dim' in run_config.keys()\
+                else run_config['model/params/config/Architecture/params/embed_dim']
             if run_data['embed_dims'] == -1:
                 run_data['embed_dims'] = 384
 
