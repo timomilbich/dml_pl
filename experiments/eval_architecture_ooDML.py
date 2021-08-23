@@ -16,7 +16,8 @@ name_list, group_list, summary_list, config_list, data_list = experiments.get_wa
 
 project_group = 'ooDML_msloss'
 labelspace = 'arch'
-dataset = 'sop' # 'cub200'
+dataset = 'cub200' # 'cub200'
+filter_substrings = ['100epoch']
 
 # filter runs data - project group
 ids_valid = [i for i, group in enumerate(group_list) if group == project_group]
@@ -25,6 +26,11 @@ data_list = [data_list[i] for i in ids_valid]
 
 # filter runs data - dataset
 ids_valid = [i for i, d in enumerate(data_list) if d['dataset'] == dataset]
+name_list = [name_list[i] for i in ids_valid]
+data_list = [data_list[i] for i in ids_valid]
+
+# filter runs data - substrings in name
+ids_valid = [i for i, n in enumerate(name_list) if not any(map(n.__contains__, filter_substrings))]
 name_list = [name_list[i] for i in ids_valid]
 data_list = [data_list[i] for i in ids_valid]
 
@@ -65,9 +71,9 @@ for label in labels_unique:
 # plotting
 x_label = 'split_id'
 x_ticks = list(range(1, n_x_ticks + 1)) # e.g. split ids
-colors = ['green', 'red', 'blue', 'magenta']
-linestyles = ['solid', 'solid', 'solid', 'solid'] # 'dashed'
-alphas = [1.0, 1.0, 1.0, 1.0, 1.0]
+colors = ['green', 'red', 'blue', 'magenta', 'yellow', 'cyan']
+linestyles = ['solid', 'solid', 'solid', 'solid', 'solid', 'solid'] # 'dashed'
+alphas = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
 
 fig, ax = plt.subplots(figsize=(5, 4))

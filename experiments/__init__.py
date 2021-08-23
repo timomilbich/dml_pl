@@ -24,7 +24,7 @@ def get_wandb_data():
     for run in tqdm(runs, desc='Collect wandb runs data'):
 
         # only consider finised runs (not 'running', 'crashed', 'failed', etc.)
-        if run.state != "finished":
+        if run.state in ['running', 'crashed']:
             continue
 
         try:

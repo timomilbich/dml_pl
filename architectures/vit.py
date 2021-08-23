@@ -13,6 +13,8 @@ def select_model(arch, pretrained=True, **kwargs):
         return timm_vit.vit_base_patch16_224_in21k(pretrained=pretrained, **kwargs), 768 # CHECK IF NEW TIMM PIP IS AVAILABLE TO USE NORMAL IMAGENET
     elif 'vit_base_patch16_224' in arch:
         return timm_vit.vit_base_patch16_224(pretrained=pretrained, **kwargs), 768 # CHECK IF NEW TIMM PIP IS AVAILABLE TO USE NORMAL IMAGENET
+    elif 'vit_small_patch32_224' in arch:
+        return timm_vit.vit_small_patch32_224(pretrained=pretrained, **kwargs), 384 # CHECK IF NEW TIMM PIP IS AVAILABLE TO USE NORMAL IMAGENET
     elif 'vit_small_patch16_224_in21k' in arch:
         model_kwargs = dict(patch_size=16, embed_dim=384, depth=12, num_heads=6, **kwargs)
         cfg_custom = _cfg(url='https://storage.googleapis.com/vit_models/augreg/S_16-i21k-300ep-lr_0.001-aug_light1-wd_0.03-do_0.0-sd_0.0.npz', num_classes=21843),
