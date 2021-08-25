@@ -20,7 +20,7 @@ class Sampler(torch.utils.data.sampler.Sampler):
         self.batch_size         = opt.bs
         self.samples_per_class  = opt.samples_per_class
         self.sampler_length     = len(image_list)//opt.bs
-        assert self.batch_size%self.samples_per_class==0, '#Samples per class must divide batchsize!'
+        assert self.batch_size % self.samples_per_class == 0, '#Samples per class must divide batchsize!'
 
         self.name             = 'random_sampler'
         self.requires_storage = False

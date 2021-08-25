@@ -250,6 +250,8 @@ if __name__ == "__main__":
         print(f"TRAINING PARAMETERS:\nmax_epoch: {trainer_opt.max_epochs}\nbatchsize: {data.batch_size}\nlearning rate: {model.learning_rate}"
               f"\nweight_decay: {weight_decay}\nscheduler: {scheduler}\ngamma: {gamma}\ntau: {tau}\n")
 
+
+
         # run
         if opt.train:
             trainer.tune(model, data)

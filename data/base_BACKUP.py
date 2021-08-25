@@ -42,17 +42,20 @@ class DataModuleFromConfig(pl.LightningDataModule):
         ## Init dataloaders
         if train is not None:
             ## Add datasampler if required
-            self.train_datasampler = True if "data_sampler" in self.dataset_configs["train"].keys() else False
+            if "data_sampler" in self.dataset_configs["train"].keys():
+                self.train_datasampler = self._add_datasampler(dataset="train")
             self.train_dataloader = self._train_dataloader
 
         if validation is not None:
             ## Add datasampler if required
-            self.val_datasampler = True if "data_sampler" in self.dataset_configs["validation"].keys() else False
+            if "data_sampler" in self.dataset_configs["validation"].keys():
+                self.val_datasampler = self._add_datasampler(dataset="validation")
             self.val_dataloader = self._val_dataloader
 
         if test is not None:
             ## Add datasampler if required
-            self.test_datasampler = True if "data_sampler" in self.dataset_configs["test"].keys() else False
+            if "data_sampler" in self.dataset_configs["test"].keys():
+                self.test_datasampler = self._add_datasampler(dataset="test")
             self.test_dataloader = self._test_dataloader
 
     def _setup(self, stage=None):
@@ -64,26 +67,23 @@ class DataModuleFromConfig(pl.LightningDataModule):
                 self.datasets[k] = WrappedDataset(self.datasets[k])
 
     def _train_dataloader(self):
-        datasampler = self._add_datasampler(dataset="train") if self.train_datasampler else None # instantiate after ddp has been initialized to enable multi GPU training
         return DataLoader(self.datasets["train"],
-                          batch_size=self.batch_size if not self.train_datasampler else 1,
+                          batch_size=self.batch_size if self.train_datasampler is None else 1,
                           num_workers=self.num_workers,
-                          batch_sampler=datasampler,
-                          shuffle=not self.train_datasampler)
+                          batch_sampler=self.train_datasampler,
+                          shuffle=self.train_datasampler is None)
 
     def _val_dataloader(self):
-        datasampler = self._add_datasampler(dataset="validation") if self.val_datasampler else None # instantiate after ddp has been initialized to enable multi GPU training
         return DataLoader(self.datasets["validation"],
-                          batch_size=self.batch_size if not self.val_datasampler else 1,
+                          batch_size=self.batch_size if self.val_datasampler is None else 1,
                           num_workers=self.num_workers,
-                          batch_sampler=datasampler)
+                          batch_sampler=self.val_datasampler)
 
     def _test_dataloader(self):
-        datasampler = self._add_datasampler(dataset='test') if self.test_datasampler else None # instantiate after ddp has been initialized to enable multi GPU training
         return DataLoader(self.datasets["test"],
-                          batch_size=self.batch_size if not self.test_datasampler else 1,
+                          batch_size=self.batch_size if self.test_datasampler is None else 1,
                           num_workers=self.num_workers,
-                          batch_sampler=datasampler)
+                          batch_sampler=self.test_datasampler)
 
     def _add_datasampler(self, dataset):
         config_datasampler = self.dataset_configs[dataset]["data_sampler"]
