@@ -18,11 +18,17 @@ class Sampler(torch.utils.data.sampler.Sampler):
         if num_replicas is None:
             if not dist.is_available():
                 raise RuntimeError("Requires distributed package to be available")
-            num_replicas = dist.get_world_size()
+            try:
+                num_replicas = dist.get_world_size()
+            except:
+                num_replicas = 1
         if rank is None:
             if not dist.is_available():
                 raise RuntimeError("Requires distributed package to be available")
-            rank = dist.get_rank()
+            try:
+                rank = dist.get_rank()
+            except:
+                rank = 0
         if rank >= num_replicas or rank < 0:
             raise ValueError(
                 "Invalid rank {}, rank should be in the interval [0, {}]".format(rank, num_replicas - 1))

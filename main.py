@@ -5,7 +5,7 @@ from pytorch_lightning import seed_everything
 from pytorch_lightning.trainer import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from utils.auxiliaries import instantiate_from_config, nondefault_trainer_args
-from utils.callbacks import SetupCallback
+from utils.callbacks import SetupCallback, ProgressBarCallback
 from pytorch_lightning.profiler import SimpleProfiler, AdvancedProfiler
 
 
@@ -229,13 +229,16 @@ if __name__ == "__main__":
         lightning_config.modelcheckpoint['params']['dirpath'] = ckptdir
         checkpoint_callback = instantiate_from_config(lightning_config.modelcheckpoint)
 
+        # Setup custom progressbar
+        bar = ProgressBarCallback(run_name=opt.savename)
+
         # Setup other callbacks - Setupcallback is always called
         setup_callback = SetupCallback(opt.resume, now, logdir, ckptdir, cfgdir, config, lightning_config)
         if lightning_config.callbacks is not None:
             logging_callbacks = [instantiate_from_config(lightning_config.callbacks[k]) for k in lightning_config.callbacks]
         else:
             logging_callbacks = []
-        trainer_kwargs["callbacks"] = [setup_callback, *logging_callbacks]
+        trainer_kwargs["callbacks"] = [setup_callback, *logging_callbacks, bar]
         if not opt.debug:
             trainer_kwargs["callbacks"] += [checkpoint_callback]
 

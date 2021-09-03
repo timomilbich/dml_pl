@@ -70,19 +70,14 @@ class Criterion(torch.nn.Module):
         pos_mask, neg_mask = self.sample_mask(self.similarity)
         self.pos_mask, self.neg_mask = pos_mask, neg_mask
 
+        ###
         pos_s = self.masked_logsumexp(w_pos_sims, mask=pos_mask, dim=self.dim, max=True  if self.d_mode=='euclidean' else False)
         neg_s = self.masked_logsumexp(w_neg_sims, mask=neg_mask, dim=self.dim, max=False if self.d_mode=='euclidean' else True)
-
-        ###
         pos_s, neg_s = 1./np.abs(pos_weight)*torch.nn.Softplus()(pos_s), 1./np.abs(neg_weight)*torch.nn.Softplus()(neg_s)
         pos_s, neg_s = pos_s.mean(), neg_s.mean()
         loss = pos_s + neg_s
 
-
         return loss
-
-
-
 
     ###
     def sample_mask(self, sims):
@@ -137,7 +132,15 @@ class Criterion(torch.nn.Module):
             nz_entries = nz_entries.max(dim=dim,keepdim=True)[0]+nz_entries.min(dim=dim,keepdim=True)[0]
             nz_entries = torch.where(nz_entries.view(-1))[0].view(-1)
 
+            # if not len(nz_entries):
+            #     return torch.tensor(0).to(torch.float).to(sims.device).requires_grad_() # need to set requires grad manually!
+            # else:
+            #     return torch.log((torch.sum(torch.exp(sims-ref_v.detach())*mask,dim=dim)).view(-1)[nz_entries])+ref_v.detach().view(-1)[nz_entries]
+
             if not len(nz_entries):
-                return torch.tensor(0).to(torch.float).to(sims.device)
+                print('len(nz_entries)=0 => set loss to zero.')
+                vals = sims - ref_v.detach()
+                vals = vals.fill_(0.) # fill with zeros to yield loss=0 => no gradients
+                return torch.log((torch.sum(torch.exp(vals) * mask, dim=dim)))
             else:
                 return torch.log((torch.sum(torch.exp(sims-ref_v.detach())*mask,dim=dim)).view(-1)[nz_entries])+ref_v.detach().view(-1)[nz_entries]

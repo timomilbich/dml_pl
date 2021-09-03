@@ -119,6 +119,15 @@ echo "EXP_PATH: ${EXP_PATH}"
 #               'data.params.train.target=data.CARS196.DATA' 'data.params.validation.target=data.CARS196.DATA' \
 #               --savename att_ens_msloss_vit_s_p16_224_384f_cars196 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
 
+
+
+# hyperparam search for msloss
+python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=60' \
+               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+               --savename msloss_vitS16_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+
 #########################
 ## ... proxyanchor loss #
 #########################
