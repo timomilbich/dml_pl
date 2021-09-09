@@ -244,20 +244,20 @@ if __name__ == "__main__":
 
         ## Define Trainer
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
-        weight_decay, gamma, scheduler, tau = config.model.weight_decay, config.model.gamma, config.model.scheduler, config.model.tau
+        weight_decay, gamma, scheduler, tau, type_optim = config.model.weight_decay, config.model.gamma, config.model.scheduler, config.model.tau, config.model.type_optim
+        model.type_optim = type_optim
         model.weight_decay = weight_decay
         model.gamma = gamma
         model.tau = tau
         bs, base_lr = config.data.params.batch_size, config.model.base_learning_rate
         model.learning_rate = base_lr
-        print(f"TRAINING PARAMETERS:\nmax_epoch: {trainer_opt.max_epochs}\nbatchsize: {data.batch_size}\nlearning rate: {model.learning_rate}"
+        print(f"TRAINING PARAMETERS:\nmax_epoch: {trainer_opt.max_epochs}\noptimizer: {model.type_optim}\nbatchsize: {data.batch_size}\nlearning rate: {model.learning_rate}"
               f"\nweight_decay: {weight_decay}\nscheduler: {scheduler}\ngamma: {gamma}\ntau: {tau}\n")
-
 
 
         # run
         if opt.train:
-            trainer.tune(model, data)
+            # trainer.tune(model, data)
             trainer.fit(model, data)
             trainer.test(model, data)
     except Exception:

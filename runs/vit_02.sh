@@ -1,4 +1,4 @@
-export GPU_TRAINING=0,
+export GPU_TRAINING=5,
 echo "GPUs: ${GPU_TRAINING}"
 export EXP_PATH='/export/data/tmilbich/PycharmProjects/dml_pl/experiments/training_models'
 echo "EXP_PATH: ${EXP_PATH}"
@@ -121,12 +121,106 @@ echo "EXP_PATH: ${EXP_PATH}"
 
 
 
-# hyperparam search for msloss
-python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=60' \
+# hyperparam search for msloss - loss_multisimilarity_pos_thresh (ref=0.5)
+
+python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
                'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
                'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
                'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
-               --savename msloss_vitS16_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+               --savename msloss_vitS16_baseline_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_pos_thresh=0.1' \
+#               --savename msloss_vitS16_pos_thresh0.1_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+#
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_pos_thresh=0.3' \
+#               --savename msloss_vitS16_pos_thresh0.3_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+#
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_pos_thresh=0.7'
+#               --savename msloss_vitS16_pos_thresh0.7_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+
+# hyperparam search for msloss - loss_multisimilarity_neg_thresh (ref=0.5)
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_neg_thresh=0.1' \
+#               --savename msloss_vitS16_neg_thresh0.1_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+#
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_neg_thresh=0.3' \
+#               --savename msloss_vitS16_neg_thresh0.3_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+#
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_neg_thresh=0.7' \
+#               --savename msloss_vitS16_neg_thresh0.7_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_neg_thresh=0.9' \
+#               --savename msloss_vitS16_neg_thresh0.9_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+#
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_neg_thresh=1.1' \
+#               --savename msloss_vitS16_neg_thresh1.1_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+
+# hyperparam search for msloss - loss_multisimilarity_margin (ref=0.1)
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_margin=0.02' \
+#               --savename msloss_vitS16_margin0.02_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+#
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_margin=0.05' \
+#               --savename msloss_vitS16_neg_thresh0.05_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_margin=0.2' \
+#               --savename msloss_vitS16_neg_thresh0.2_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_margin=0.3' \
+#               --savename msloss_vitS16_margin0.3_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
+#
+#python main.py 'model.params.config.Architecture.params.embed_dim=-1' 'lightning.logger.params.group=hyperparam_msloss' 'lightning.trainer.max_epochs=30' \
+#               'model.params.config.Architecture.target=architectures.vit.Network' 'model.params.config.Architecture.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.params.arch=vit_small_patch16_224_normalize' 'data.params.validation.params.arch=vit_small_patch16_224_normalize' \
+#               'data.params.train.target=data.CUB200.DATA' 'data.params.validation.target=data.CUB200.DATA' \
+#               'model.params.config.Loss.params.loss_multisimilarity_margin=0.4' \
+#               --savename msloss_vitS16_margin0.4_cub200 --exp_path ${EXP_PATH} --gpus ${GPU_TRAINING} --base configs/multisimloss.yaml
 
 #########################
 ## ... proxyanchor loss #

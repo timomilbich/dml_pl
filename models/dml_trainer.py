@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
@@ -11,6 +12,7 @@ class DML_Model(pl.LightningModule):
         config = OmegaConf.to_container(config)
 
         ## Init optimizer hyperparamters
+        self.type_optimizer = None
         self.weight_decay = 0
         self.gamma = 0
         self.tau = 0
@@ -59,7 +61,22 @@ class DML_Model(pl.LightningModule):
         loss = self.loss(output['embeds'], labels, split="train") ## Change inputs to loss
         self.log("Loss", loss, prog_bar=True, logger=True, on_step=False, on_epoch=True) ## Add to progressbar
 
-        return loss
+        # compute gradient magnitude
+        total_step_gradient_magnitude = 0.
+        if self.global_step > 0:
+            for name, param in self.model.named_parameters():
+                if (param.requires_grad) and ("bias" not in name) and param.grad is not None:
+                    total_step_gradient_magnitude += param.grad.abs().mean().cpu().detach().numpy()
+
+        return {"loss": loss, "av_grad_mag": total_step_gradient_magnitude}
+
+    def training_epoch_end(self, outputs):
+        grad_mag_avs = np.mean([x["av_grad_mag"] for x in outputs])
+
+        # log results
+        log_data = {f"grad_mag_avs": grad_mag_avs}
+        self.log_dict(log_data, prog_bar=False, logger=True, on_step=False, on_epoch=True)
+
 
     def validation_step(self, batch, batch_idx):
         inputs = batch[0]
@@ -90,10 +107,15 @@ class DML_Model(pl.LightningModule):
         self.log_dict(log_data, prog_bar=False, logger=True, on_step=False, on_epoch=True)
 
     def configure_optimizers(self):
-
         to_optim = [{'params': self.model.parameters(), 'lr': self.learning_rate, 'weight_decay': self.weight_decay}]
         to_optim = add_criterion_optim_params(self.loss, to_optim)
-        optimizer = torch.optim.Adam(to_optim)
+
+        if self.type_optim == 'adam':
+            optimizer = torch.optim.Adam(to_optim)
+        elif self.type_optim == 'adamW':
+            optimizer = torch.optim.AdamW(to_optim)
+        else:
+            raise Exception(f'[{self.type_optim}] is an unknown/not supported optimizer. Currently supported optimizer [Adam, AdamW].')
 
         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=self.tau, gamma=self.gamma)
 

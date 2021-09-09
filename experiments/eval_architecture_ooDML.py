@@ -23,7 +23,7 @@ name_list, group_list, summary_list, config_list, data_list = experiments.get_wa
 project_group = 'ooDML_msloss'
 labelspace = 'arch'
 dataset = 'sop' # 'cub200'
-filter_substrings = ['100epoch', 'gpu2_sop', 'vitS8Dino_bs30_c'] # 'vitS8Dino_bs30_c'
+filter_substrings = ['100epoch', 'vitS8Dino_bs30_c'] # 'vitS8Dino_bs30_c', 'gpu2_sop'
 
 # filter runs data - project group
 ids_valid = [i for i, group in enumerate(group_list) if group == project_group]

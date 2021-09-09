@@ -2,7 +2,7 @@
 from criteria import triplet, margin, proxynca, npair, simsiam
 from criteria import lifted, contrastive, softmax, ep
 from criteria import angular, snr, histogram, arcface, proxyanchor, proxyanchor_orig, oproxy
-from criteria import softtriplet, multisimilarity, quadruplet
+from criteria import softtriplet, multisimilarity, quadruplet, margin_multisimilarity
 ### Basic Libs
 import copy
 import argparse
@@ -27,6 +27,7 @@ losses = {'triplet': triplet,
           'quadruplet': quadruplet,
           'proxyanchor_orig': proxyanchor_orig,
           'simsiam': simsiam,
+          'margin_multisimilarity': margin_multisimilarity,
           }
 
 """================================================================================================="""

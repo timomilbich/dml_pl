@@ -17,9 +17,9 @@ model:
 
       Loss:
         target: criteria.select
-        name: "multisimilarity"
+        name: "margin_multisimilarity"
         params:
-          name: "multisimilarity"
+          name: "margin_multisimilarity"
           batchminer:
           n_classes: -1
           loss_multisimilarity_pos_weight: 2
@@ -29,6 +29,10 @@ model:
           loss_multisimilarity_neg_thresh: 0.5
           loss_multisimilarity_base_mode: 1
           loss_multisimilarity_d_mode: 'cosine'
+          loss_multisimilarity_beta_lr: 0.0005
+          loss_multisimilarity_beta: 0.5
+          loss_multisimilarity_beta_const: False
+          loss_multisimilarity_sampling_mode: 'max_min'
 
       Evaluation:
         target: metrics.metric_computer.MetricComputer
