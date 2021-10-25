@@ -9,6 +9,7 @@ import copy
 ALLOWED_MINING_OPS  = None
 REQUIRES_BATCHMINER = False
 REQUIRES_OPTIM      = False
+REQUIRES_LOGGING    = False
 
 ### MarginLoss with trainable class separation margin beta. Runs on Mini-batches as well.
 class Criterion(torch.nn.Module):
@@ -37,6 +38,7 @@ class Criterion(torch.nn.Module):
         self.ALLOWED_MINING_OPS  = ALLOWED_MINING_OPS
         self.REQUIRES_BATCHMINER = REQUIRES_BATCHMINER
         self.REQUIRES_OPTIM      = REQUIRES_OPTIM
+        self.REQUIRES_LOGGING = REQUIRES_LOGGING
 
     def forward(self, batch, labels, **kwargs):
         """

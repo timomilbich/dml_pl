@@ -17,9 +17,9 @@ model:
 
       Loss:
         target: criteria.select
-        name: "margin_multisimilarity"
+        name: "margin_multisimilarity2"
         params:
-          name: "margin_multisimilarity"
+          name: "margin_multisimilarity2"
           batchminer:
           n_classes: -1
           loss_multisimilarity_pos_weight: 2
@@ -32,8 +32,17 @@ model:
           loss_multisimilarity_beta_lr: 0.0005
           loss_multisimilarity_beta: 0.5
           loss_multisimilarity_beta_const: False
+          loss_multisimilarity_init_distr: 'uniform_low'
+          loss_multisimilarity_init_distr_nbins: 25
+          loss_multisimilarity_init_distr_mu: 0.6
+          loss_multisimilarity_init_distr_sigma: 0.05
           loss_multisimilarity_sampling_mode: 'max_min'
+          loss_multisimilarity_sampling_incl_pos: False
           loss_multisimilarity_sampling_upper_cutoff: 1.0
+          loss_multisimilarity_sampling_ema_alpha: 0.25
+          loss_multisimilarity_sampling_normalize_update: True
+
+
 
       Evaluation:
         target: metrics.metric_computer.MetricComputer

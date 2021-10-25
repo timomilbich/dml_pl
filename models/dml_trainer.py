@@ -58,25 +58,29 @@ class DML_Model(pl.LightningModule):
         labels = batch[1]
         output = self.model(inputs)
 
-        loss = self.loss(output['embeds'], labels, split="train") ## Change inputs to loss
+        loss = self.loss(output['embeds'], labels, global_step=self.global_step, split="train") ## Change inputs to loss
         self.log("Loss", loss, prog_bar=True, logger=True, on_step=False, on_epoch=True) ## Add to progressbar
 
         # compute gradient magnitude
-        total_step_gradient_magnitude = 0.
+        mean_gradient_magnitude = 0.
         if self.global_step > 0:
             for name, param in self.model.named_parameters():
                 if (param.requires_grad) and ("bias" not in name) and param.grad is not None:
-                    total_step_gradient_magnitude += param.grad.abs().mean().cpu().detach().numpy()
+                    mean_gradient_magnitude += param.grad.abs().mean().cpu().detach().numpy()
 
-        return {"loss": loss, "av_grad_mag": total_step_gradient_magnitude}
+        return {"loss": loss, "av_grad_mag": mean_gradient_magnitude}
 
     def training_epoch_end(self, outputs):
         grad_mag_avs = np.mean([x["av_grad_mag"] for x in outputs])
 
         # log results
         log_data = {f"grad_mag_avs": grad_mag_avs}
-        self.log_dict(log_data, prog_bar=False, logger=True, on_step=False, on_epoch=True)
 
+        if self.loss.REQUIRES_LOGGING:
+            loss_log_data = self.loss.get_log_data()
+            log_data = {**log_data, **loss_log_data}
+
+        self.log_dict(log_data, prog_bar=False, logger=True, on_step=False, on_epoch=True)
 
     def validation_step(self, batch, batch_idx):
         inputs = batch[0]

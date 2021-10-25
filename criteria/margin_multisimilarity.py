@@ -9,6 +9,8 @@ import copy
 ALLOWED_MINING_OPS  = None
 REQUIRES_BATCHMINER = False
 REQUIRES_OPTIM      = True
+REQUIRES_LOGGING = True
+
 
 ### MarginLoss with trainable class separation margin beta. Runs on Mini-batches as well.
 class Criterion(torch.nn.Module):
@@ -34,6 +36,7 @@ class Criterion(torch.nn.Module):
         self.d_mode = opt.loss_multisimilarity_d_mode
         self.base_mode = opt.loss_multisimilarity_base_mode
         self.sampling_mode = opt.loss_multisimilarity_sampling_mode
+        self.upper_cutoff = opt.loss_multisimilarity_sampling_upper_cutoff
 
         #### margin loss params
         self.beta_const = opt.loss_multisimilarity_beta_const
@@ -44,6 +47,8 @@ class Criterion(torch.nn.Module):
         self.ALLOWED_MINING_OPS= ALLOWED_MINING_OPS
         self.REQUIRES_BATCHMINER = REQUIRES_BATCHMINER
         self.REQUIRES_OPTIM = REQUIRES_OPTIM
+        self.REQUIRES_LOGGING = REQUIRES_LOGGING
+
 
     def forward(self, batch, labels, **kwargs):
 
@@ -78,7 +83,7 @@ class Criterion(torch.nn.Module):
 
             elif self.sampling_mode == 'distance':
                 pos_pair = pos_pair_[np.random.choice(len(pos_pair_))] # choose random positive
-                q_d_inv = self.inverse_sphere_cosine_distances(dim, neg_pair_)
+                q_d_inv = self.inverse_sphere_cosine_distances(dim, neg_pair_.clamp(max=self.upper_cutoff))
                 neg_pair = neg_pair_[np.random.choice(len(neg_pair_), p=q_d_inv)]
 
             # weighting step

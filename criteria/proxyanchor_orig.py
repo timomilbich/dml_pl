@@ -10,6 +10,7 @@ import torch.nn.functional as F
 ALLOWED_MINING_OPS  = None
 REQUIRES_BATCHMINER = False
 REQUIRES_OPTIM      = True
+REQUIRES_LOGGING    = False
 
 
 class Criterion(torch.nn.Module):

@@ -5,7 +5,7 @@ import batchminer
 """================================================================================================="""
 ALLOWED_MINING_OPS  = list(batchminer.BATCHMINING_METHODS.keys())
 REQUIRES_BATCHMINER = False
-REQUIRES_OPTIM      = True
+REQUIRES_OPTIM      = False
 REQUIRES_LOGGING    = False
 
 ### MarginLoss with trainable class separation margin beta. Runs on Mini-batches as well.
@@ -21,11 +21,9 @@ class Criterion(torch.nn.Module):
         super(Criterion, self).__init__()
         self.n_classes          = opt.n_classes
         self.batchminer = batchminer
-        self.name  = 'simsiam'
-        self.criterion = nn.CosineSimilarity(dim=1)
+        self.name  = 'simclr'
         self.lr = opt.pred_lr
-        self.n_warmup_iterations = opt.n_warmup_iterations
-        self.iter_counter = 0
+        self.temperature = opt.temperature
 
         # build a 2-layer predictor
         self.predictor = nn.Sequential(nn.BatchNorm1d(opt.embed_dim),
@@ -33,6 +31,8 @@ class Criterion(torch.nn.Module):
                                        nn.BatchNorm1d(opt.pred_dim),
                                        nn.ReLU(inplace=True), # hidden layer
                                        nn.Linear(opt.pred_dim, opt.embed_dim)) # output layer
+
+        self.criterion = torch.nn.CrossEntropyLoss()
 
         ####
         self.ALLOWED_MINING_OPS  = ALLOWED_MINING_OPS
@@ -47,32 +47,29 @@ class Criterion(torch.nn.Module):
             labels: nparray/list: For each element of the batch assigns a class [0,...,C-1], shape: (BS x 1)
         """
 
-        ids_pos = []
-        bs, _ = batch.shape
-        for i in range(bs):
-            pos = (labels == labels[i]).cpu().numpy() # represents second view
+        bs, dim = batch.size()
+        labels = torch.cat([torch.ones(2) * i for i in range(int(bs/2))], dim=0)
+        labels = (labels.unsqueeze(0) == labels.unsqueeze(1)).float()
 
-            # Sample positives randomly
-            if np.sum(pos) > 0:
-                if np.sum(pos) > 1: pos[i] = 0 # exclude anchor itself
-                ids_pos.append(np.random.choice(np.where(pos)[0]))
-            else:
-                raise Exception("Anchor without positive detected!")
+        # labels = (labels.unsqueeze(0) == labels.unsqueeze(1)).float()
 
-        positives = batch[ids_pos, :]
+        similarity_matrix = torch.matmul(batch, batch.T)
 
-        # create predictions
-        self.iter_counter += 1
-        if self.iter_counter <= self.n_warmup_iterations:
-            p1 = self.predictor(batch.detach())  # NxC
-            p2 = self.predictor(positives.detach())  # NxC
-        else:
-            p1 = self.predictor(batch)  # NxC
-            p2 = self.predictor(positives)  # NxC
-        # p1 = torch.nn.functional.normalize(p1, dim=-1)
-        # p2 = torch.nn.functional.normalize(p2, dim=-1)
+        # discard the main diagonal from both: labels and similarities matrix
+        mask = torch.eye(labels.shape[0], dtype=torch.bool)
+        labels = labels[~mask].view(labels.shape[0], -1)
+        similarity_matrix = similarity_matrix[~mask].view(similarity_matrix.shape[0], -1)
+        # assert similarity_matrix.shape == labels.shape
 
-        # compute loss
-        loss = -(self.criterion(p1, positives.detach()).mean() + self.criterion(p2, batch.detach()).mean()) * 0.5
+        # select and combine multiple positives
+        positives = similarity_matrix[labels.bool()].view(labels.shape[0], -1)
 
-        return loss
+        # select only the negatives the negatives
+        negatives = similarity_matrix[~labels.bool()].view(similarity_matrix.shape[0], -1)
+
+        logits = torch.cat([positives, negatives], dim=1)
+        labels = torch.zeros(logits.shape[0], dtype=torch.long).to(batch.device)
+
+        logits = logits / self.temperature
+
+        return self.criterion(logits, labels)

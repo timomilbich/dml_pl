@@ -12,28 +12,20 @@ model:
         target: architectures.vit.Network
         params:
           pretraining: "imagenet"
-          embed_dim: -1 # 512
-          arch: "vit_small_patch16_224_normalize" #"bninception_frozen_normalize"
+          embed_dim: -1
+          arch: "vit_small_patch16_224_normalize" # deit_small_patch16_224, resnet50_frozen_normalize
 
       Loss:
         target: criteria.select
-        name: "margin_multisimilarity"
+        name: "simclr"
         params:
-          name: "margin_multisimilarity"
+          name: "simclr"
           batchminer:
           n_classes: -1
-          loss_multisimilarity_pos_weight: 2
-          loss_multisimilarity_neg_weight: 40
-          loss_multisimilarity_margin: 0.1
-          loss_multisimilarity_pos_thresh: 0.5
-          loss_multisimilarity_neg_thresh: 0.5
-          loss_multisimilarity_base_mode: 1
-          loss_multisimilarity_d_mode: 'cosine'
-          loss_multisimilarity_beta_lr: 0.0005
-          loss_multisimilarity_beta: 0.5
-          loss_multisimilarity_beta_const: False
-          loss_multisimilarity_sampling_mode: 'max_min'
-          loss_multisimilarity_sampling_upper_cutoff: 1.0
+          embed_dim: 384 # equal to general model embed_dim
+          pred_dim: 384 # predictor dimensionality
+          pred_lr: 0.00001 # equal to general model lr
+          temperature: 0.07
 
       Evaluation:
         target: metrics.metric_computer.MetricComputer
@@ -57,8 +49,7 @@ data:
       params: 
         root:
         train: True
-        ooDML_split_id: -1
-        arch: "vit_small_patch16_224_normalize"
+        arch: "vit_small_patch16_224_normalize" # resnet50_frozen_normalize
       data_sampler:
         target: datasampler.select
         params:
@@ -70,13 +61,11 @@ data:
       params:
         root:
         train: False
-        ooDML_split_id: -1
-        arch: "vit_small_patch16_224_normalize"
+        arch: "vit_small_patch16_224_normalize" # resnet50_frozen_normalize
 
 lightning:
   trainer:
-    accelerator: 'ddp' #
-    replace_sampler_ddp: False
+    # accelerator: 'ddp'
     # accumulate_grad_batches: 1
     auto_scale_batch_size: false
     benchmark: False
@@ -94,7 +83,7 @@ lightning:
       wandb_key: 8388187e7c47589ca2875e4007015c7536aede7f
       project: DML_PL
       group: baselines
-      savename:
+      savename: test
 
   modelcheckpoint:
     target: pytorch_lightning.callbacks.ModelCheckpoint
