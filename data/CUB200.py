@@ -29,7 +29,7 @@ class DATA(Dataset):
         super(DATA, self).__init__()
 
         self.train = train  # training set or test set
-        self.root = "/export/home/karoth/Datasets/cub200/" if root is None else root
+        self.root = "/export/home/tmilbich/Datasets/cub200/" if root is None else root
         self.n_classes = 100
         self.path_ooDML_splits = "/export/home/tmilbich/PycharmProjects/dml_pl/data/ooDML_splits/cub200_splits.pkl"
 

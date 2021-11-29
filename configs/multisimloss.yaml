@@ -9,11 +9,11 @@ model:
   params:
     config:
       Architecture:
-        target: architectures.vit.Network
+        target: architectures.bninception.Network
         params:
           pretraining: "imagenet"
           embed_dim: -1 # 512
-          arch: "vit_small_patch16_224_normalize" #"bninception_frozen_normalize"
+          arch: "bninception_frozen_normalize" #"bninception_frozen_normalize", vit_small_patch16_224_normalize
 
       Loss:
         target: criteria.select
@@ -53,7 +53,7 @@ data:
         root:
         train: True
         ooDML_split_id: -1
-        arch: "vit_small_patch16_224_normalize"
+        arch: "bninception_frozen_normalize" # vit_small_patch16_224_normalize
       data_sampler:
         target: datasampler.select
         params:
@@ -66,7 +66,7 @@ data:
         root:
         train: False
         ooDML_split_id: -1
-        arch: "vit_small_patch16_224_normalize"
+        arch: "bninception_frozen_normalize" # vit_small_patch16_224_normalize
 
 lightning:
   trainer:

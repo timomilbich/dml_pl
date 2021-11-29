@@ -31,7 +31,7 @@ class DATA(Dataset):
         super(DATA, self).__init__()
 
         self.train = train  # training set or test set
-        self.root = "/export/home/karoth/Datasets/online_products/" if root is None else root
+        self.root = "/export/home/tmilbich/Datasets/online_products/" if root is None else root
         self.n_classes = 11318 # number of train classes
         self.path_ooDML_splits = "/export/home/tmilbich/PycharmProjects/dml_pl/data/ooDML_splits/online_products_splits.pkl"
         image_sourcepath = self.root + '/images'
