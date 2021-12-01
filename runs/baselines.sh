@@ -1,4 +1,4 @@
-export GPU_TRAINING=3,
+export GPU_TRAINING=6
 echo "GPUs: ${GPU_TRAINING}"
 export EXP_PATH='/export/data/tmilbich/PycharmProjects/dml_pl/experiments/training_models'
 echo "EXP_PATH: ${EXP_PATH}"
