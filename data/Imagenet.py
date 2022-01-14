@@ -78,7 +78,7 @@ class DATA(Dataset):
     def __getitem__(self, idx):
         data = self.dataset.__getitem__(idx)
         img = data['image']
-        img = self.normal_transform(img)
+        img = self.transform(img)
 
         label = data['class_label']
 

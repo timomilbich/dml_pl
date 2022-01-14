@@ -174,13 +174,13 @@ class ImagePaths(Dataset):
 
     def preprocess_image(self, image_path):
         image = Image.open(image_path)
-        if not image.mode == "RGB":
-            image = image.convert("RGB")
-        image = np.array(image).astype(np.uint8)
-        image = self.preprocessor(image=image)["image"]
-        if self.uniform_dequantization:
-            image = image.astype(np.float32)
-            image = image + np.random.uniform()/256.
+        # if not image.mode == "RGB":
+        #     image = image.convert("RGB")
+        # image = np.array(image).astype(np.uint8)
+        # image = self.preprocessor(image=image)["image"]
+        # if self.uniform_dequantization:
+        #     image = image.astype(np.float32)
+        #     image = image + np.random.uniform()/256.
         # image = (image/127.5 - 1.0).astype(np.float32)   # in range -1 ... 1 # Use torchvision normalization later
         return image
 
