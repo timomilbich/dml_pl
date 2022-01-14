@@ -17,18 +17,13 @@ model:
 
       Loss:
         target: criteria.select
-        name: "multisimilarity"
+        name: "softmax"
         params:
-          name: "multisimilarity"
+          name: "softmax"
           batchminer:
-          n_classes: -1
-          loss_multisimilarity_pos_weight: 2
-          loss_multisimilarity_neg_weight: 40
-          loss_multisimilarity_margin: 0.1
-          loss_multisimilarity_pos_thresh: 0.5
-          loss_multisimilarity_neg_thresh: 0.5
-          loss_multisimilarity_base_mode: 1
-          loss_multisimilarity_d_mode: 'cosine'
+          loss_softmax_temperature: 1
+          loss_softmax_lr: 0.00001
+          embed_dim: 384
 
       Evaluation:
         target: metrics.metric_computer.MetricComputer
@@ -48,20 +43,15 @@ data:
     num_workers: 20
 
     train:
-      target: data.CUB200.DATA
-      params: 
+      target: data.Imagenet.DATA
+      params:
         root:
         train: True
         ooDML_split_id: -1
         arch: "bninception_frozen_normalize" # vit_small_patch16_224_normalize
-      data_sampler:
-        target: datasampler.select
-        params:
-          name: "class_random"
-          samples_per_class: 2
 
     validation:
-      target: data.CUB200.DATA
+      target: data.Imagenet.DATA
       params:
         root:
         train: False
@@ -102,7 +92,7 @@ lightning:
       verbose: True
       save_last: True
       save_top_k: 1
-  
+
   callbacks:
 #    earlystopcallback:
 #      target: utils.callbacks.EarlyStoppingPL

@@ -34,7 +34,6 @@ class Sampler(torch.utils.data.sampler.Sampler):
                 "Invalid rank {}, rank should be in the interval [0, {}]".format(rank, num_replicas - 1))
         self.num_replicas = num_replicas
         self.rank = rank
-        self.epoch = 0
         self.drop_last = drop_last
 
         #####
@@ -71,15 +70,3 @@ class Sampler(torch.utils.data.sampler.Sampler):
 
     def __len__(self):
         return self.sampler_length
-
-
-    def set_epoch(self, epoch: int) -> None:
-        r"""
-        Sets the epoch for this sampler. When :attr:`shuffle=True`, this ensures all replicas
-        use a different random ordering for each epoch. Otherwise, the next iteration of this
-        sampler will yield the same ordering.
-
-        Args:
-            epoch (int): Epoch number.
-        """
-        self.epoch = epoch

@@ -2,6 +2,7 @@ import numpy as np
 import torch, torch.nn as nn, torch.nn.functional as F
 from tqdm import tqdm
 import random
+import torch.distributed as dist
 
 
 
@@ -13,17 +14,46 @@ class Sampler(torch.utils.data.sampler.Sampler):
     """
     Plugs into PyTorch Batchsampler Package.
     """
-    def __init__(self, opt, image_dict, image_list=None):
-        self.image_dict         = image_dict
-        self.image_list         = image_list
+    def __init__(self, image_dict, image_list, batch_size, drop_last=False, num_replicas=None, rank=None):
 
-        self.batch_size         = opt.bs
-        self.samples_per_class  = opt.samples_per_class
-        self.sampler_length     = len(image_list)//opt.bs
-        assert self.batch_size % self.samples_per_class == 0, '#Samples per class must divide batchsize!'
+        if num_replicas is None:
+            if not dist.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            try:
+                num_replicas = dist.get_world_size()
+            except:
+                num_replicas = 1
+        if rank is None:
+            if not dist.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            try:
+                rank = dist.get_rank()
+            except:
+                rank = 0
+        if rank >= num_replicas or rank < 0:
+            raise ValueError(
+                "Invalid rank {}, rank should be in the interval [0, {}]".format(rank, num_replicas - 1))
+        self.num_replicas = num_replicas
+        self.rank = rank
+        self.drop_last = drop_last
 
-        self.name             = 'random_sampler'
+        #####
+        self.image_dict = image_dict
+        self.image_list = image_list
+
+        #####
+        self.train_classes = list(self.image_dict.keys())
+
+        ####
+        self.batch_size = batch_size
+        self.sampler_length_total = len(image_list) // batch_size
+        self.sampler_length = self.sampler_length_total // self.num_replicas
+
+        self.name = 'random_sampler'
         self.requires_storage = False
+
+        print(f"\nData sampler [{self.name}] initialized with rank=[{self.rank}/{self.num_replicas}] and sampler length=[{self.sampler_length}/{self.sampler_length_total}].\n")
+
 
     def __iter__(self):
         for _ in range(self.sampler_length):

@@ -1,14 +1,11 @@
-import warnings
-from PIL import Image
 import os
 import os.path
-import numpy as np
 import torch
-import string
-from typing import Callable
 from torch.utils.data import Dataset
+import torchvision
+import torchvision.transforms as transforms
 
-class MNISTDATA(Dataset):
+class DATA(Dataset):
     """`MNIST <http://yann.lecun.com/exdb/mnist/>`_ Dataset.
 
     Args:
@@ -29,60 +26,51 @@ class MNISTDATA(Dataset):
             self,
             root,
             train = True,
-            transform = None,
-            target_transform = None,
             img_dim = 28,
-            ):
+            ooDML_split_id=-1,
+            arch='resnet50',
+    ):
 
-        super(MNISTDATA, self).__init__()
+        super(DATA, self).__init__()
 
         self.train = train  # training set or test set
-        self.root = root
-        self.transform = transform
-        self.target_transform = target_transform
-        self.img_dim = img_dim
-        self.root = root
-
-        if not self._check_exists():
-            raise RuntimeError('Dataset not found.')
+        self.root = "/export/home/tmilbich/Datasets/MNIST/" if root is None else root
+        self.n_classes = 10
 
         if self.train:
-            data_file = self.training_file
-        else:
-            data_file = self.test_file
+            self.dataset = torchvision.datasets.MNIST(self.root, train=True, download=True,
+                                                 transform=torchvision.transforms.Compose(
+                                                     [torchvision.transforms.ToTensor(),
+                                                      torchvision.transforms.Normalize((0.1307,), (0.3081,))]))
+            self.image_dict = {
+                'imgs': self.dataset.train_data,
+                'labels': self.dataset.train_labels
+            }
+            self.transform = self.dataset.transform
 
-        self.data, self.targets = torch.load(os.path.join(self.root, data_file))
+        else:
+            self.dataset = torchvision.datasets.MNIST(self.root, train=False, download=True,
+                                                 transform=torchvision.transforms.Compose(
+                                                     [torchvision.transforms.ToTensor(),
+                                                      torchvision.transforms.Normalize((0.1307,), (0.3081,))]))
+
+            self.image_dict = {
+                'imgs': self.dataset.test_data,
+                'labels': self.dataset.test_labels
+            }
+            self.transform = self.dataset.transform
 
     def __getitem__(self, index: int):
-        """
-        Args:
-            index (int): Index
 
-        Returns:
-            tuple: (image, target) where target is index of the target class.
-        """
-        img, target = self.data[index], int(self.targets[index])
+        img, target = self.image_dict['imgs'][index], int(self.image_dict['labels'][index])
 
-        # doing this so that it is consistent with all other datasets
-        # to return a PIL Image
-        # img = Image.fromarray(img.numpy(), mode='L')
-
-        if self.transform is not None:
-            img = self.transform(img)
-
-        if self.target_transform is not None:
-            target = self.target_transform(target)
-
-        img = img.unsqueeze(0)/255
+        # if self.transform is not None:
+        #     img = self.transform(img)
+        #
+        # img = img.unsqueeze(0)/255
 
         return img, target
 
     def __len__(self):
-        return len(self.data)
-
-    def _check_exists(self):
-        return (os.path.exists(os.path.join(self.root,
-                                            self.training_file)) and
-                os.path.exists(os.path.join(self.root,
-                                            self.test_file)))
+        return len(self.image_dict['imgs'])
 

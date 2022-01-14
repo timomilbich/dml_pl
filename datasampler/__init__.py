@@ -1,11 +1,15 @@
 import datasampler.class_random_sampler
 import datasampler.random_sampler
-
+import datasampler.random_sampler_mnist
 
 
 def select(name, image_dict, image_list=None, **kwargs):
     if 'class' in name:
         sampler_lib = class_random_sampler
+    elif 'random_sampler_mnist' in name:
+        sampler_lib = random_sampler_mnist
+    elif 'random_sampler' in name:
+        sampler_lib = random_sampler
     elif 'full' in name:
         raise Exception('Minibatch sampler <{}> not supported, yet!'.format(name))
         # sampler_lib = random_sampler
